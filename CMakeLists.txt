@@ -22,6 +22,11 @@ add_executable(
 )
 
 add_library(
+	hex_lib
+	hexlib/hex_lib.cc
+)
+
+add_library(
 	6502_lib
 	6502_lib.cc
 )
@@ -31,11 +36,24 @@ add_executable(
 	cpu_core_test.cc
 )
 
+add_executable(
+	hex_tests
+	hex_tests.cc
+)
+
 target_link_libraries(
 	cpu_core_tests
 	6502_lib
 	gtest_main
 )
 
+target_link_libraries(
+	hex_tests
+	hex_lib
+	gtest_main
+)
+
+
 include(GoogleTest)
 gtest_discover_tests(cpu_core_tests)
+gtest_discover_tests(hex_tests)
