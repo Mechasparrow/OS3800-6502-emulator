@@ -11,7 +11,12 @@ class CPU6502 {
         unsigned char SP;
         unsigned char flags;
 
-        unsigned char RAM[RAM_SIZE];
+        CPU6502();
 };
 
-CPU6502 init_CPU();
+class DataBus {
+    public:
+        unsigned char RAM[RAM_SIZE];
+
+        DataBus();
+};
