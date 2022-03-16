@@ -1,4 +1,4 @@
-build: 6502_lib.cc 6502_lib.h 6502_main.cc cpu_core_test.cc
+build: *.cc *.h hexlib/*.h hexlib/*.cc tests/*.cc
 	cmake --build build 
 
 test:

@@ -16,9 +16,17 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+include_directories(${PROJECT_SOURCE_DIR}/hexlib)
+include_directories(${PROJECT_SOURCE_DIR})
+
 add_executable(
 	6502_cs3800_emulator
 	6502_main.cc
+)
+
+add_library(
+	hex_lib
+	hexlib/hex_lib.cc
 )
 
 add_library(
@@ -26,9 +34,16 @@ add_library(
 	6502_lib.cc
 )
 
+include_directories(${PROJECT_SOURCE_DIR}/tests)
+
 add_executable(
 	cpu_core_tests
-	cpu_core_test.cc
+	tests/cpu_core_test.cc
+)
+
+add_executable(
+	hex_tests
+	tests/hex_tests.cc
 )
 
 target_link_libraries(
@@ -37,5 +52,13 @@ target_link_libraries(
 	gtest_main
 )
 
+target_link_libraries(
+	hex_tests
+	hex_lib
+	gtest_main
+)
+
+
 include(GoogleTest)
 gtest_discover_tests(cpu_core_tests)
+gtest_discover_tests(hex_tests)
