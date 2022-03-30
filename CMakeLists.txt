@@ -30,6 +30,11 @@ add_library(
 )
 
 add_library(
+	asm_commands
+	asm_commands.cc
+)
+
+add_library(
 	6502_lib
 	6502_lib.cc
 )
@@ -39,6 +44,11 @@ include_directories(${PROJECT_SOURCE_DIR}/tests)
 add_executable(
 	cpu_core_tests
 	tests/cpu_core_test.cc
+)
+
+add_executable(
+	asm_commands_tests
+	tests/asm_commands_test.cc
 )
 
 add_executable(
@@ -58,7 +68,14 @@ target_link_libraries(
 	gtest_main
 )
 
+target_link_libraries(
+	asm_commands_tests
+	asm_commands
+	gtest_main
+)
+
 
 include(GoogleTest)
 gtest_discover_tests(cpu_core_tests)
 gtest_discover_tests(hex_tests)
+gtest_discover_tests(asm_commands_tests)

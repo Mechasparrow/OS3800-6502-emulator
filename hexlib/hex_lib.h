@@ -1,5 +1,5 @@
 #include <iostream>
 #include <map>
 
-unsigned char hex2char(std::string hexstring);
-std::string char2hex(unsigned char hexChar);
+uint8_t hex2byte(std::string hexstring);
+std::string byte2hex(uint8_t byte);

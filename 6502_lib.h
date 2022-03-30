@@ -4,19 +4,18 @@
 
 class CPU6502 {
     public:
-        unsigned char PC[2];
-        unsigned char A;
-        unsigned char X;
-        unsigned char Y;
-        unsigned char SP;
-        unsigned char flags;
+        uint16_t PC;
+        uint8_t A;
+        uint8_t X;
+        uint8_t Y;
+        uint8_t SP;
+        uint8_t flags;
 
         CPU6502();
 };
 
 class DataBus {
     public:
-        unsigned char RAM[RAM_SIZE];
-
+        uint8_t RAM[RAM_SIZE];
         DataBus();
 };
