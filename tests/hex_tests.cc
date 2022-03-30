@@ -17,6 +17,8 @@ TEST(ConvertHexToDoubleByte, BasicAssertions){
         hexStringInput[3] = lowerByteString[1];
 
         uint16_t returnedDoubleByte = hex2doublebyte(hexStringInput);
+        
+        std::cout << "done testing " << hexStringInput << std::endl;
         ASSERT_EQ(i, returnedDoubleByte);
     }
 }
@@ -29,7 +31,6 @@ TEST(ConvertDoubleByteToHex, BasicAssertions) {
     
         std::string expectedHexString = "0000";
 
-        std::cout << "done testing " << expectedHexString << std::endl;
 
         std::string lowerByteString = byte2hex(lowerByte);
         std::string upperByteString = byte2hex(upperByte);
@@ -40,7 +41,10 @@ TEST(ConvertDoubleByteToHex, BasicAssertions) {
         expectedHexString[3] = lowerByteString[1];
 
         std::string retHex = byte2doublehex(i);
+
+        std::cout << "done testing " << expectedHexString << std::endl;
         ASSERT_EQ(expectedHexString, retHex);
+
 
     }
 }
@@ -61,7 +65,7 @@ TEST(ConvertByteToHexString, BasicAssertions){
 
             uint8_t byteInput = i;
             
-            std::cout << "Testing the following: " << (int)byteInput << std::endl;
+            std::cout << "Testing the following: " << (int)byteInput << ", Expecting: " << hexString << std::endl;
             std::string retHex = byte2hex(byteInput);
             ASSERT_EQ(hexString, retHex);
     }
