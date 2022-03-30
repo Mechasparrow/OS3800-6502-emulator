@@ -53,7 +53,7 @@ TEST(ConvertDoubleByteToHex, BasicAssertions) {
 TEST(ConvertByteToHexString, BasicAssertions){
     unsigned char HEX[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
-    for (int i = 0; i < 255; i++){
+    for (int i = 0; i < 200; i++){
         unsigned char expectedHexValue = HEX[i];
         std::string hexString = "00";
 
@@ -75,7 +75,7 @@ TEST(ConvertHexStringToChar, BasicAssertions) {
     unsigned char HEX[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
     for (unsigned int b = 0; b < 2; b++){
-        for (int i = 0; i < 255; i++){
+        for (int i = 0; i < 200; i++){
             unsigned char expectedHexValue = HEX[i];
             std::string hexString = "00";
 
