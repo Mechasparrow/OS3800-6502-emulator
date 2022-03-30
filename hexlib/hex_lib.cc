@@ -68,3 +68,11 @@ std::string byte2hex(uint8_t byte) {
     return returnedHex;
 }
 
+std::string byte2doublehex(uint16_t doublebyte){
+    return "";
+}
+
+uint16_t hex2doublebyte(std::string hexstring){
+    return 0;
+}
+

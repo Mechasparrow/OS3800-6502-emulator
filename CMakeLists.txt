@@ -70,6 +70,7 @@ target_link_libraries(
 
 target_link_libraries(
 	asm_commands_tests
+	6502_lib
 	asm_commands
 	gtest_main
 )
