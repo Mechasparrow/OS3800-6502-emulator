@@ -54,6 +54,10 @@ TEST(ConvertByteToHexString, BasicAssertions){
     unsigned char HEX[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
     for (unsigned int i = 0; i < 256; i++){
+            if (i >= 256){
+                break;
+            }
+
             unsigned char expectedHexValue = HEX[i];
             std::string hexString = "00";
 
