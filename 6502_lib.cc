@@ -14,3 +14,11 @@ DataBus::DataBus() {
         RAM[i] = 0;
     }
 }
+
+uint8_t DataBus::Read(uint16_t address){
+    return RAM[address];
+}
+
+void DataBus::Write(uint16_t address, uint8_t data){
+    RAM[address] = data;
+}
