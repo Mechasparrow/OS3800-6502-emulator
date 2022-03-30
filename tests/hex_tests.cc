@@ -2,11 +2,10 @@
 #include <iostream>
 #include "hex_lib.h"
 
-
 TEST(ConvertHexToDoubleByte, BasicAssertions){
-    for (uint16_t i = 0; i < 256 * 256; i++){
+    for (unsigned int i = 0; i < 256 * 256; i++){
         uint8_t lowerByte = i & 0b0000000011111111;
-        uint8_t upperByte = (i >> (4 * 4)) & 0b0000000011111111;
+        uint8_t upperByte = (i >> 8) & 0b0000000011111111;
     
         std::string hexStringInput = "0000";
         std::string lowerByteString = byte2hex(lowerByte);
@@ -22,12 +21,16 @@ TEST(ConvertHexToDoubleByte, BasicAssertions){
     }
 }
 
+
 TEST(ConvertDoubleByteToHex, BasicAssertions) {
-    for (uint16_t i = 0; i < 256 * 256; i++){
+    for (unsigned int i = 0; i < 256 * 256; i++){
         uint8_t lowerByte = i & 0b0000000011111111;
-        uint8_t upperByte = (i >> (4 * 4)) & 0b0000000011111111;
+        uint8_t upperByte = (i >> 8) & 0b0000000011111111;
     
         std::string expectedHexString = "0000";
+
+        std::cout << "done testing " << expectedHexString << std::endl;
+
         std::string lowerByteString = byte2hex(lowerByte);
         std::string upperByteString = byte2hex(upperByte);
 
@@ -38,8 +41,10 @@ TEST(ConvertDoubleByteToHex, BasicAssertions) {
 
         std::string retHex = byte2doublehex(i);
         ASSERT_EQ(expectedHexString, retHex);
+
     }
 }
+
 
 TEST(ConvertByteToHexString, BasicAssertions){
     unsigned char HEX[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
