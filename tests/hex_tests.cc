@@ -53,25 +53,19 @@ TEST(ConvertDoubleByteToHex, BasicAssertions) {
 TEST(ConvertByteToHexString, BasicAssertions){
     unsigned char HEX[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
-    for (unsigned int i = 0; i < 256; i++){
-            if (i >= 256){
-                break;
-            }
+    for (int i = 0; i < 256; i++){
+        unsigned char expectedHexValue = HEX[i];
+        std::string hexString = "00";
 
-            unsigned char expectedHexValue = HEX[i];
-            std::string hexString = "00";
+        uint8_t lowerBittle = i & 0b00001111;
+        uint8_t upperBittle = (i >> 4) & 0b00001111;
 
-            uint8_t lowerBittle = i & 0b00001111;
-            uint8_t upperBittle = (i >> 4) & 0b00001111;
+        hexString[1] = HEX[lowerBittle];
+        hexString[0] = HEX[upperBittle];
 
-            hexString[1] = HEX[lowerBittle];
-            hexString[0] = HEX[upperBittle];
-
-            uint8_t byteInput = i;
-            
-            std::cout << "Testing the following: " << (int)byteInput << ", Expecting: " << hexString << std::endl;
-            std::string retHex = byte2hex(byteInput);
-            ASSERT_EQ(hexString, retHex);
+        std::cout << "Testing the following: " << i << ", Expecting: " << hexString << std::endl;
+        std::string retHex = byte2hex(i);
+        ASSERT_EQ(hexString, retHex);
     }
     
 }
@@ -81,7 +75,7 @@ TEST(ConvertHexStringToChar, BasicAssertions) {
     unsigned char HEX[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
     for (unsigned int b = 0; b < 2; b++){
-        for (unsigned int i = 0; i < 256; i++){
+        for (int i = 0; i < 256; i++){
             unsigned char expectedHexValue = HEX[i];
             std::string hexString = "00";
 
@@ -96,10 +90,8 @@ TEST(ConvertHexStringToChar, BasicAssertions) {
                 hexString[0] = tolower(hexString[0]);
             }
 
-            uint8_t expectedValue = i;
-            
             uint8_t retChar = hex2byte(hexString);
-            ASSERT_EQ(expectedValue, retChar);
+            ASSERT_EQ(i, retChar);
         }
     }
     
