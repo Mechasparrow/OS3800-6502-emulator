@@ -1,0 +1,1 @@
+../assembler/vasm6502_oldstyle -Fsrec -s19 -o test.s19 test.asm

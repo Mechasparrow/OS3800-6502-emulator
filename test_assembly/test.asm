@@ -6,6 +6,6 @@
 ; Notes:  Clobbers A, X, Y. Each * in the pattern uses 4 bytes of stack.
 ;
 
-program:
-	LDA #$FF
-	STA $01
+    ORG $C000
+    LDA #$FF
+    STA $FFAA
