@@ -17,11 +17,17 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 include_directories(${PROJECT_SOURCE_DIR}/hexlib)
+include_directories(${PROJECT_SOURCE_DIR}/test_assembly)
 include_directories(${PROJECT_SOURCE_DIR})
 
 add_executable(
 	6502_cs3800_emulator
 	6502_main.cc
+)
+
+add_library(
+	6502_loader
+	program_loader/6502_loader.cc
 )
 
 add_library(
@@ -66,6 +72,16 @@ target_link_libraries(
 	hex_tests
 	hex_lib
 	gtest_main
+)
+
+target_link_libraries(
+	6502_loader
+	hex_lib
+)
+
+target_link_libraries(
+	6502_cs3800_emulator
+	6502_loader
 )
 
 target_link_libraries(
