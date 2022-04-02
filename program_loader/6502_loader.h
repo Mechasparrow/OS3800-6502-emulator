@@ -3,7 +3,7 @@
 #include <vector>
 #include <map>
 #include "../hexlib/hex_lib.h"
-
+#include "../6502_lib.h"
 
 //For s19 records: We can assume that
 //only S0, S1, S5, and S9 is used
@@ -51,8 +51,13 @@ class Loader6502 {
         Loader6502(std::string fileName);
         ~Loader6502();
 
+        void burnRecords(DataBus * dataBus);
         void readFileContents();
+
+        bool recordRead;
     private: 
         std::string fileName;
         std::ifstream fileStream;
+        std::vector<SRecord> records;
+        
 };

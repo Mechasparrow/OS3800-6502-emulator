@@ -12,8 +12,28 @@ Loader6502::~Loader6502(){
     this->fileStream.close();
 }
 
+//burn into RAM
+void Loader6502::burnRecords(DataBus * dataBus){
+    //NOTE: only concern ourselves with only Data16 records
+
+    for (SRecord record : this->records){
+        if (record.recordType != SRecordType::Data16){
+            continue;
+        }
+
+        uint16_t addressToWrite = record.recordStartingAddress;
+        for (uint8_t dataElem : record.recordData){
+            dataBus->Write(addressToWrite, dataElem);
+            
+            std::cout << byte2doublehex(addressToWrite) << ": " << byte2hex(dataElem) << std::endl;
+
+            addressToWrite += 1;
+        }
+    }
+
+}
+
 void Loader6502::readFileContents(){
-    std::cout << "Reading the following file: " << this->fileName << std::endl;
     //https://en.wikipedia.org/wiki/SREC_(file_format)
 
     //Read S type
@@ -21,9 +41,10 @@ void Loader6502::readFileContents(){
     if (this->fileStream.is_open()){
         while (std::getline(this->fileStream, sRecord)){
             SRecord parsedRecord = parseSRecordString(sRecord);
-            parsedRecord.printRecord();
-            std::cout << std::endl;
+            this->records.insert(this->records.end(), parsedRecord);
         }
+
+        this->recordRead = true;
     }else{
         std::cout << "Unable to open file" << std::endl;
     }
@@ -89,7 +110,7 @@ SRecord parseSRecordString(std::string rawSRecord){
             rawSRecord[recordReadIdx], 
             rawSRecord[recordReadIdx+1]
         };
-        
+
         uint8_t dataByte = hex2byte(dataByteHex);
 
         //push the data byte
@@ -106,7 +127,6 @@ SRecord parseSRecordString(std::string rawSRecord){
 
     return newRecord;
 }
-
 
 SRecordType parseStringToRecordType(std::string rawSRecordType){
     if (rawSRecordType == "S0"){

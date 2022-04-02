@@ -13,7 +13,7 @@ TEST(LoadIntoARegister, BasicAssertions) {
 
        db.Write(memAddress, databusValue);
 
-       LDA(&testCpu, &db, memAddress);
+       LDA(&testCpu, &db, memAddress, AddressingMode::ZERO_PAGE);
 
        ASSERT_EQ(databusValue, testCpu.A);
 

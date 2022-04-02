@@ -81,6 +81,7 @@ target_link_libraries(
 
 target_link_libraries(
 	6502_cs3800_emulator
+	6502_lib
 	6502_loader
 )
 
