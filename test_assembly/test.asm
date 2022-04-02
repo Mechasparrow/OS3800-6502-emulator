@@ -8,5 +8,4 @@
 
     ORG $C000
 program:
-    LDA #$FF
-    STA $E003
+    LDA #$AB

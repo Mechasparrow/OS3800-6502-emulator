@@ -1,6 +1,4 @@
 #include <gtest/gtest.h>
-#include <iostream>
-
 #include "asm_commands.h"
 
 TEST(LoadIntoARegister, BasicAssertions) {

@@ -1,6 +1,10 @@
 #include <iostream>
 
+#ifndef CPU
+#define CPU
+
 #define RAM_SIZE 64000
+
 
 class CPU6502 {
     public:
@@ -22,3 +26,5 @@ class DataBus {
         uint8_t Read(uint16_t address);
         void Write(uint16_t address, uint8_t value);
 };
+
+#endif

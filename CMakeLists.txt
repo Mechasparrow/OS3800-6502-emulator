@@ -80,15 +80,20 @@ target_link_libraries(
 )
 
 target_link_libraries(
-	6502_cs3800_emulator
+	asm_commands
 	6502_lib
+)
+
+target_link_libraries(
+	6502_cs3800_emulator
+	asm_commands
 	6502_loader
 )
 
 target_link_libraries(
 	asm_commands_tests
-	6502_lib
 	asm_commands
+	6502_lib
 	gtest_main
 )
 
