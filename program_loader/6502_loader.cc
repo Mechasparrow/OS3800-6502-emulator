@@ -29,11 +29,28 @@ void Loader6502::readFileContents(){
     }
 }
 
+std::string recordDataRepr(std::vector<uint8_t> recordData){
+    std::string recordDataString = "";
+
+    unsigned int dataIdx = 0;
+    for (uint8_t recordDataElem : recordData){
+        recordDataString.append(byte2hex(recordDataElem));
+
+        if (dataIdx + 1 < recordData.size()){
+            recordDataString.append(", ");
+        }   
+
+        dataIdx++;
+    }
+
+    return recordDataString;
+}
+
 void SRecord::printRecord(){
-    std::cout << "Record Type: " << this->recordType << std::endl;
+    std::cout << "Record Type: " << SRecordTypeStringMap.at(this->recordType) << std::endl;
     std::cout << "Record Size: " << (int)this->recordSize << std::endl;
     std::cout << "Record Address: " << byte2doublehex(this->recordStartingAddress) << std::endl;
-    std::cout << "Record Data: " << "TODO" << std::endl;
+    std::cout << "Record Data: " << recordDataRepr(this->recordData) << std::endl;
     std::cout << "Record Checksum: " << byte2hex(this->checkSum) << std::endl;
 }
 
@@ -41,40 +58,50 @@ SRecord parseSRecordString(std::string rawSRecord){
 
     SRecord newRecord;
 
-    //TODO
-    unsigned int recordStringIdx = 0;
-    
     std::string recordTypeString {
-        rawSRecord[recordStringIdx],
-        rawSRecord[recordStringIdx+1]
+        rawSRecord[0],
+        rawSRecord[1]
     };
-
-    recordStringIdx+=2;
-    std::string byteCountString {
-        rawSRecord[recordStringIdx], 
-        rawSRecord[recordStringIdx+1]
-    };
-
-    recordStringIdx+=2;
-    std::string addressString {
-        rawSRecord[recordStringIdx], 
-        rawSRecord[recordStringIdx+1], 
-        rawSRecord[recordStringIdx+2], 
-        rawSRecord[recordStringIdx+3]
-    };
-    recordStringIdx+=4;
-
     newRecord.recordType = parseStringToRecordType(recordTypeString);
+
+    std::string byteCountString {
+        rawSRecord[2], 
+        rawSRecord[3]
+    };
+    
     newRecord.recordSize = hex2byte(byteCountString);
+    unsigned int recordDataLeft = newRecord.recordSize;
+   
+    std::string addressString {
+        rawSRecord[4], 
+        rawSRecord[5], 
+        rawSRecord[6], 
+        rawSRecord[7]
+    };
     newRecord.recordStartingAddress = hex2doublebyte(addressString);
 
-    std::cout << "Starting data idx: " << recordStringIdx << std::endl;
+    recordDataLeft -= 2; //remove the 2 starting address bytes
+   
+    unsigned int recordReadIdx = 8;
+    while (recordDataLeft > 1){
+        //read the data byte
+        std::string dataByteHex {
+            rawSRecord[recordReadIdx], 
+            rawSRecord[recordReadIdx+1]
+        };
+        
+        uint8_t dataByte = hex2byte(dataByteHex);
 
-    //TODO read the data elements
+        //push the data byte
+        newRecord.recordData.insert(newRecord.recordData.end(), dataByte);
 
-    //TODO read the checksum
-    unsigned int recordLength = rawSRecord.length();
-    std::string checkSumString {rawSRecord[recordLength-2], rawSRecord[recordLength-1]};
+        //Increment
+        recordReadIdx+=2;
+        recordDataLeft -= 1;
+    }
+
+    //read the checksum
+    std::string checkSumString {rawSRecord[recordReadIdx], rawSRecord[recordReadIdx+1]};
     newRecord.checkSum = hex2byte(checkSumString);
 
     return newRecord;
@@ -82,6 +109,37 @@ SRecord parseSRecordString(std::string rawSRecord){
 
 
 SRecordType parseStringToRecordType(std::string rawSRecordType){
-    //TODO
-    return Unknown;
+    if (rawSRecordType == "S0"){
+        return SRecordType::Header;
+    }
+    else if (rawSRecordType == "S1"){
+        return SRecordType::Data16;
+    }
+    else if (rawSRecordType == "S2"){
+        return SRecordType::Data24;
+    }
+    else if (rawSRecordType == "S3"){
+        return SRecordType::Data32;
+    }
+    else if (rawSRecordType == "S4"){
+        return SRecordType::Reserved;
+    }
+    else if (rawSRecordType == "S5"){
+        return SRecordType::Count16;
+    }
+    else if (rawSRecordType == "S6"){
+        return SRecordType::Count24;
+    }
+    else if (rawSRecordType == "S7"){
+        return SRecordType::StartAddress32;
+    }
+    else if (rawSRecordType == "S8"){
+        return SRecordType::StartAddress24;
+    }
+    else if (rawSRecordType == "S9"){
+        return SRecordType::StartAddress16;
+    }
+    else {
+        return SRecordType::Unknown;
+    }
 }

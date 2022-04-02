@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
-#include <forward_list>
+#include <vector>
+#include <map>
 #include "../hexlib/hex_lib.h"
 
 
@@ -20,12 +21,26 @@ enum SRecordType {
     Unknown
 };
 
+static const std::map<SRecordType, std::string> SRecordTypeStringMap {
+    {SRecordType::Header, "Header"},
+    {SRecordType::Data16, "Data16"},
+    {SRecordType::Data24, "Data24"},
+    {SRecordType::Data32, "Data32"},
+    {SRecordType::Reserved, "Reserved"},
+    {SRecordType::Count16, "Count16"},
+    {SRecordType::Count24, "Count24"}, 
+    {SRecordType::StartAddress32, "StartAddress32"},
+    {SRecordType::StartAddress24, "StartAddress24"},
+    {SRecordType::StartAddress16, "StartAddress16"}, 
+    {SRecordType::Unknown, "Unknown"}, 
+};
+
 class SRecord {
     public:
         SRecordType recordType;
         uint8_t recordSize;
         uint16_t recordStartingAddress;
-        std::forward_list<uint8_t> recordData; 
+        std::vector<uint8_t> recordData; 
         uint8_t checkSum;
 
         void printRecord();

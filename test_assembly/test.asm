@@ -9,4 +9,3 @@
     ORG $D000
 program:
     LDA #$FF
-    STA $FFAA
