@@ -8,4 +8,6 @@
 
     ORG $C000
 program:
-    LDA #$AB
+    LDA #$AA
+    LDX #$BB
+    LDY #$CC
