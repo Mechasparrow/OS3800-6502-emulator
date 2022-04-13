@@ -51,7 +51,7 @@ class Loader6502 {
         Loader6502(std::string fileName);
         ~Loader6502();
 
-        void burnRecords(DataBus * dataBus);
+        uint16_t burnRecords(DataBus * dataBus);
         void readFileContents();
 
         bool recordRead;

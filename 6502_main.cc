@@ -11,13 +11,16 @@ int main(){
     DataBus mainDataBus;
     CPU6502 mainCpu;
 
-    SetProgramEntryPoint(&mainCpu, hex2doublebyte("C000"));
+    uint16_t programEntryPoint = 0;
+    
 
     Loader6502 loader {"../test_assembly/test.s19"};
     loader.readFileContents();
     if (loader.recordRead){
-        loader.burnRecords(&mainDataBus);
+        programEntryPoint = loader.burnRecords(&mainDataBus);
     }
+
+    SetProgramEntryPoint(&mainCpu, programEntryPoint);
 
     std::cout << "Beginning CPU execution" << std::endl;
 
@@ -30,12 +33,6 @@ void SetProgramEntryPoint(CPU6502 * cpu, uint16_t startingAddress){
     cpu->PC = startingAddress;
 }
 
-void viewCPUFlags(CPU6502 * cpu){
-    std::cout << "A register: " << byte2hex(cpu->A) << std::endl;
-    std::cout << "X register: " << byte2hex(cpu->X) << std::endl;
-    std::cout << "Y register: " << byte2hex(cpu->Y) << std::endl;
-}
-
 void FetchExecuteLoop(CPU6502 * cpu, DataBus * databus, uint16_t stopAddress){
     while (cpu->PC != stopAddress){
         //fetch
@@ -43,13 +40,6 @@ void FetchExecuteLoop(CPU6502 * cpu, DataBus * databus, uint16_t stopAddress){
         uint8_t currentInstruction = databus->Read(cpu->PC);
 
         OpCodeInformation opInformation = OpCodeLookupTable.at(byte2hex(currentInstruction));
-        if (opInformation.mnemonicName == "NOOP"){
-            cpu->PC += opInformation.bytes;
-            continue;
-        }
-
-        //execute
-        std::cout << "Executing: " << opInformation.mnemonicName << std::endl;
 
         std::vector<uint8_t> dataParameters;
         if (opInformation.bytes - 1 > 0){
@@ -63,8 +53,6 @@ void FetchExecuteLoop(CPU6502 * cpu, DataBus * databus, uint16_t stopAddress){
         }
 
         opInformation.opCodeToCall(cpu, databus, dataParameters, opInformation.addressingMode);
-
-        viewCPUFlags(cpu);
 
         //increment PC
         cpu->PC += opInformation.bytes;

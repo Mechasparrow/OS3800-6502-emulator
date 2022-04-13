@@ -1,1 +1,1 @@
-../assembler/vasm6502_oldstyle -Fsrec -s19 -o test.s19 test.asm
+../assembler/vasm6502_oldstyle -Fsrec -s19 -exec=program -o test.s19 test.asm

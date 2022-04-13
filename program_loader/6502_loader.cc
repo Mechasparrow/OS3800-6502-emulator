@@ -13,8 +13,14 @@ Loader6502::~Loader6502(){
 }
 
 //burn into RAM
-void Loader6502::burnRecords(DataBus * dataBus){
+uint16_t Loader6502::burnRecords(DataBus * dataBus){
     //NOTE: only concern ourselves with only Data16 records
+
+    //TODO burn all records as NOP initially
+    uint16_t addressIter = hex2doublebyte("0000");
+    for (addressIter = hex2doublebyte("0000"); byte2doublehex(addressIter+1) != "FFFF"; addressIter++){
+        dataBus->Write(addressIter, hex2byte("EA"));
+    }
 
     for (SRecord record : this->records){
         if (record.recordType != SRecordType::Data16){
@@ -25,12 +31,13 @@ void Loader6502::burnRecords(DataBus * dataBus){
         for (uint8_t dataElem : record.recordData){
             dataBus->Write(addressToWrite, dataElem);
             
-            std::cout << byte2doublehex(addressToWrite) << ": " << byte2hex(dataElem) << std::endl;
+            //std::cout << byte2doublehex(addressToWrite) << ": " << byte2hex(dataElem) << std::endl;
 
             addressToWrite += 1;
         }
     }
 
+    return this->records.at(this->records.size()-1).recordStartingAddress;
 }
 
 void Loader6502::readFileContents(){

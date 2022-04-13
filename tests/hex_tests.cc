@@ -50,18 +50,19 @@ TEST(ConvertDoubleByteToHex, BasicAssertions) {
 }
 
 
+
 TEST(ConvertByteToHexString, BasicAssertions){
-    unsigned char HEX[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+    char hextable[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
     for (int i = 0; i < 256; i++){
-        unsigned char expectedHexValue = HEX[i];
+        unsigned char expectedHexValue = hextable[i];
         std::string hexString = "00";
 
         uint8_t lowerBittle = i & 0b00001111;
         uint8_t upperBittle = (i >> 4) & 0b00001111;
 
-        hexString[1] = HEX[lowerBittle];
-        hexString[0] = HEX[upperBittle];
+        hexString[1] = hextable[lowerBittle];
+        hexString[0] = hextable[upperBittle];
 
         std::cout << "Testing the following: " << i << ", Expecting: " << hexString << std::endl;
         std::string retHex = byte2hex(i);
@@ -72,18 +73,18 @@ TEST(ConvertByteToHexString, BasicAssertions){
 
 
 TEST(ConvertHexStringToChar, BasicAssertions) {
-    unsigned char HEX[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+    unsigned char hextable[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
     for (unsigned int b = 0; b < 2; b++){
         for (int i = 0; i < 256; i++){
-            unsigned char expectedHexValue = HEX[i];
+            unsigned char expectedHexValue = hextable[i];
             std::string hexString = "00";
 
             uint8_t lowerBittle = i & 0b00001111;
             uint8_t upperBittle = (i >> 4) & 0b00001111;
 
-            hexString[1] = HEX[lowerBittle];
-            hexString[0] = HEX[upperBittle];
+            hexString[1] = hextable[lowerBittle];
+            hexString[0] = hextable[upperBittle];
 
             if (b == 1){
                 hexString[1] = tolower(hexString[1]);

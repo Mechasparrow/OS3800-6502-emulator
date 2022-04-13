@@ -1,6 +1,9 @@
 #include <iostream>
 #include <map>
 
+#ifndef HEX
+#define HEX
+
 const std::map<uint8_t, char> byteToHexMap {
     {0,'0'},
     {1,'1'},
@@ -44,3 +47,5 @@ uint16_t hex2doublebyte(std::string hexstring);
 
 std::string byte2hex(uint8_t byte);
 std::string byte2doublehex(uint16_t doublebyte);
+
+#endif
