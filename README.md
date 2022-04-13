@@ -2,7 +2,7 @@
 Emulator for the CS3800 class - 6502
 
 # TODO
-- [ ] Create a s19 reader for loading in the Machine Code
+- [X] Create a s19 reader for loading in the Machine Code
 - [ ] Write simple test program for fibinocci
 
 # COMMANDS TODO

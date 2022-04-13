@@ -3,7 +3,7 @@
 #ifndef CPU
 #define CPU
 
-#define RAM_SIZE 64000
+#define RAM_SIZE 65536
 
 
 class CPU6502 {

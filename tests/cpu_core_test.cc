@@ -18,9 +18,9 @@ TEST(EnsureDatabuseInit, BasicAssertions){
 	DataBus databus;
 
 	//Ensure RAM
-	ASSERT_EQ(sizeof(databus.RAM), 64 * 1000);
+	ASSERT_EQ(sizeof(databus.RAM), 256 * 256);
 
-	for (unsigned int i = 0; i < 64 *1000;i++){
+	for (unsigned int i = 0; i < 256 *256;i++){
 		ASSERT_EQ(databus.RAM[i], 0);
 	}
 }
@@ -28,14 +28,14 @@ TEST(EnsureDatabuseInit, BasicAssertions){
 TEST(EnsureDatabuseRead, BasicAssertions){
 	DataBus databus;
 
-	uint8_t dumbRam[64 * 1000];
+	uint8_t dumbRam[256 * 256];
 
-	for (unsigned int i = 0; i < 64 * 1000; i++){
+	for (unsigned int i = 0; i < 256 * 256; i++){
 		dumbRam[i] = rand() % 100;
 		databus.RAM[i] = dumbRam[i];
 	}
 
-	for (unsigned int i = 0; i < 64 * 1000; i++){
+	for (unsigned int i = 0; i < 256 * 256; i++){
 		uint8_t readValue = databus.Read(i);
 		ASSERT_EQ(dumbRam[i], readValue);
 	}
@@ -46,7 +46,7 @@ TEST(EnsureDatabuseRead, BasicAssertions){
 TEST(EnsureDatabuseWrite, BasicAssertions){
 	DataBus databus;
 
-	for (unsigned int i = 0; i < 64 * 1000; i++){
+	for (unsigned int i = 0; i < 256 * 256; i++){
 		databus.Write(i, 100);
 		ASSERT_EQ(100, databus.RAM[i]);
 	}
