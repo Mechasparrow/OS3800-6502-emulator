@@ -59,6 +59,12 @@ TYA (Transfer Y to A)    $98
 DEY (DEcrement Y)        $88
 INY (INcrement Y)        $C8
 */
+COMMAND_IMPL(TAX);
+COMMAND_IMPL(TXA);
+COMMAND_IMPL(TAY);
+COMMAND_IMPL(TYA);
+
+
 
 /* Jump instructions */
 COMMAND_IMPL(JMP);
@@ -82,7 +88,11 @@ const std::map<std::string, OpCodeInformation> OpCodeLookupTable = {
     {"84", {&STY, "STY", AddressingMode::ZERO_PAGE, 2, 3}},
     {"8C", {&STY, "STY", AddressingMode::ABSOLUTE, 3, 4}},
     {"4C", {&JMP, "JMP", AddressingMode::ABSOLUTE, 3, 3}},
-    {"60", {&RTS, "RTS", AddressingMode::IMPLIED, 1, 6}}
+    {"60", {&RTS, "RTS", AddressingMode::IMPLIED, 1, 6}},
+    {"AA", {&TAX, "TAX", AddressingMode::IMPLIED, 1, 2}},
+    {"8A", {&TXA, "TXA", AddressingMode::IMPLIED, 1, 2}},
+    {"A8", {&TAY, "TAY", AddressingMode::IMPLIED, 1, 2}},
+    {"98", {&TYA, "TYA", AddressingMode::IMPLIED, 1, 2}},
 };
 
 //

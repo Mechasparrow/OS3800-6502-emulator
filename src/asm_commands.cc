@@ -146,6 +146,22 @@ COMMAND_IMPL(JMP){
     }
 }
 
+COMMAND_IMPL(TXA){
+    cpu->A = cpu->X;
+}
+
+COMMAND_IMPL(TAX){
+    cpu->X = cpu->A;
+}
+
+COMMAND_IMPL(TYA){
+    cpu->A = cpu->Y;
+}
+
+COMMAND_IMPL(TAY){
+    cpu->Y = cpu->A;
+}
+
 COMMAND_IMPL(RTS){
-    
+
 }

@@ -23,10 +23,10 @@ The following 6502 data instructions will be implemented.
 - [x] STA
 - [x] STX
 - [x] STY
-- [ ] TAX
-- [ ] TAY
-- [ ] TXA
-- [ ] TYA
+- [x] TAX
+- [x] TXA
+- [x] TAY
+- [x] TYA
 
 # Conditional Instructions (used for comparing values in branching)
 - [ ] CMP
