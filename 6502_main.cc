@@ -19,6 +19,7 @@ int main(int argc, char ** argv){
     if (!validatedInputs){
         std::cout << "Please pass in the s19 file like the following" << std::endl;
         std::cout << "./6502_emulator test.s19" << std::endl;
+        std::cout << "Make sure the path to your file is correct as well" << std::endl;
         return -1;  
     }
 
