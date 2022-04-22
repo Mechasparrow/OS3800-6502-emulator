@@ -3,12 +3,11 @@
 #include <vector>
 
 #include "program_loader/6502_loader.h"
+#include "input_validation.h"
 #include "asm_commands.h"
 
 void SetProgramEntryPoint(CPU6502 * cpu, uint16_t startingAddress);
 void FetchExecuteLoop(CPU6502 * cpu, DataBus * databus, uint16_t stopAddress);
-bool validFile(std::string fileName);
-bool getInputFiles(int argc, char ** argv, std::string * assemblyfile, std::string * addressesToCheckFile);
 void setupCPU(CPU6502 * cpu, DataBus * databus, std::string assemblyFilePath, std::string addressToCheckFilePath);
 
 int main(int argc, char ** argv){
@@ -37,7 +36,6 @@ int main(int argc, char ** argv){
     return 0;
 }
 
-
 void setupCPU(CPU6502 * cpu, DataBus * databus, std::string assemblyFilePath, std::string addressToCheckFilePath){
     Loader6502 * loader = new Loader6502 {assemblyFilePath};
     if (addressToCheckFilePath != ""){
@@ -54,81 +52,35 @@ void setupCPU(CPU6502 * cpu, DataBus * databus, std::string assemblyFilePath, st
     SetProgramEntryPoint(cpu, programEntryPoint);
 }
 
-bool getInputFiles(int argc, char ** argv, std::string * assemblyfile, std::string * addressesToCheckFile){
-    std::string assemblyFilePath;
-    std::string addressesToCheckFilePath;
-    bool goodToRun = false;
-
-    if (argc <= 1){
-        goodToRun = false;
-    }else if (argc == 2){
-        assemblyFilePath = std::string(argv[1]);
-        bool assemblyFileExists = validFile(assemblyFilePath);
-
-        if (assemblyFileExists){
-            goodToRun = true;
-            *assemblyfile = assemblyFilePath;
-        }else{
-            goodToRun = false;
-        }
-
-    }else if (argc >= 3){
-        assemblyFilePath = std::string(argv[1]);
-        addressesToCheckFilePath = std::string(argv[2]);
-
-        bool assemblyFileExists = validFile(assemblyFilePath);
-        bool addressesToCheckFileExists = validFile(assemblyFilePath);
-
-        if (assemblyFileExists && addressesToCheckFileExists){
-            goodToRun = true;
-            *assemblyfile = assemblyFilePath;
-            *addressesToCheckFile = addressesToCheckFilePath;
-        }else{
-            goodToRun = false;
-        }
-    }
-    
-    return goodToRun;    
-}
-
-bool validFile(std::string fileName){
-    std::ifstream file;
-    file.open(fileName);
-
-    if (file){
-        file.close();
-        return true;
-    }else{
-        return false;
-    }
-}
-
 void SetProgramEntryPoint(CPU6502 * cpu, uint16_t startingAddress){
     cpu->PC = startingAddress;
+}
+
+std::vector<uint8_t> parseDataParameters(CPU6502 * cpu, DataBus * databus, OpCodeInformation opInformation){
+    std::vector<uint8_t> dataParameters;
+    if (opInformation.bytes - 1 > 0){
+        int byteOffset = 1;
+        while (opInformation.bytes - 1 - byteOffset >= 0){
+            uint16_t paramAddress = cpu->PC + byteOffset;
+            uint8_t paramData = databus->Read(paramAddress);
+            dataParameters.insert(dataParameters.end(), paramData);
+            byteOffset+=1;
+        }
+    }
+    return dataParameters;
 }
 
 void FetchExecuteLoop(CPU6502 * cpu, DataBus * databus, uint16_t stopAddress){
     while (cpu->PC != stopAddress){
         //fetch
-
         uint8_t currentInstruction = databus->Read(cpu->PC);
 
+        //Execute
         OpCodeInformation opInformation = OpCodeLookupTable.at(byte2hex(currentInstruction));
-
-        std::vector<uint8_t> dataParameters;
-        if (opInformation.bytes - 1 > 0){
-            int byteOffset = 1;
-            while (opInformation.bytes - 1 - byteOffset >= 0){
-                uint16_t paramAddress = cpu->PC + byteOffset;
-                uint8_t paramData = databus->Read(paramAddress);
-                dataParameters.insert(dataParameters.end(), paramData);
-                byteOffset+=1;
-            }
-        }
-
+        std::vector<uint8_t> dataParameters = parseDataParameters(cpu, databus, opInformation);
         opInformation.opCodeToCall(cpu, databus, dataParameters, opInformation.addressingMode);
 
-        //increment PC
+        //Increment
         cpu->PC += opInformation.bytes;
     }
 }

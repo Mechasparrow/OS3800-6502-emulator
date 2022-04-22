@@ -26,6 +26,11 @@ add_executable(
 )
 
 add_library(
+	input_validation
+	input_validation.cc
+)
+
+add_library(
 	6502_loader
 	program_loader/6502_loader.cc
 )
@@ -87,6 +92,7 @@ target_link_libraries(
 
 target_link_libraries(
 	6502_cs3800_emulator
+	input_validation
 	asm_commands
 	6502_loader
 )
