@@ -5,7 +5,7 @@ CPU6502::CPU6502() {
     PC = 0;
     X = 0;
     Y = 0;
-    flags = 0;
+    flags = {};
     SP = 0;
 }
 

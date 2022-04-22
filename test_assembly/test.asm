@@ -10,10 +10,4 @@
 
 program:
     LDA #$AA
-    LDX #$BB
-    LDY #$CC
-    
-    STA $F0
-    STX $F1
-    STY $F2
     BRK

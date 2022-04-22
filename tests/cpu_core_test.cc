@@ -11,7 +11,14 @@ TEST(EnsureCPUInit, BasicAssertions) {
 	ASSERT_EQ(newCpu.X, 0);
 	ASSERT_EQ(newCpu.Y, 0);
 	ASSERT_EQ(newCpu.SP, 0);
-	ASSERT_EQ(newCpu.flags, 0);
+
+	ASSERT_EQ(newCpu.flags.binary_decimal, false);
+	ASSERT_EQ(newCpu.flags.breakbit, false);
+	ASSERT_EQ(newCpu.flags.carry, false);
+	ASSERT_EQ(newCpu.flags.interrupt, false);
+	ASSERT_EQ(newCpu.flags.negative, false);
+	ASSERT_EQ(newCpu.flags.overflow, false);
+	ASSERT_EQ(newCpu.flags.zero, false);
 }
 
 TEST(EnsureDatabuseInit, BasicAssertions){

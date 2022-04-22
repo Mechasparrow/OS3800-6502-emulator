@@ -62,6 +62,48 @@ void logMemRange(DataBus * dataBus, uint16_t start, uint16_t end){
     }
 }
 
+char getFlagBit(bool bit){
+    return bit ? '1' : '0';
+}
+
+void DisplayFlags (Flags flags){
+    std::cout << "N V - B D I Z C" << std::endl;
+    
+    //Negative Flag
+    std::cout << getFlagBit(flags.negative);
+    std::cout << " "; 
+    
+    //Overflow flag
+    std::cout << getFlagBit(flags.overflow);
+    std::cout << " "; 
+    
+    //Placeholder flag
+    std::cout << getFlagBit(false);
+    std::cout << " "; 
+    
+    //Break flag
+    std::cout << getFlagBit(flags.breakbit);
+    std::cout << " "; 
+
+    // Decimal flag
+    std::cout << getFlagBit(flags.binary_decimal);
+    std::cout << " "; 
+    
+    //Interrupt flag
+    std::cout << getFlagBit(flags.interrupt);
+    std::cout << " "; 
+    
+    // Zero flag
+    std::cout << getFlagBit(flags.zero);
+    std::cout << " "; 
+    
+    //Carry flag
+    std::cout << getFlagBit(flags.carry);
+    std::cout << " "; 
+    
+    std::cout << std::endl;
+}
+
 void logZeroPage(DataBus * dataBus){
     uint8_t addressIterX;
     uint8_t addressIterY;
@@ -84,6 +126,10 @@ void BRK(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, Addr
     std::cout << "A register: " << byte2hex(cpu->A) << std::endl;
     std::cout << "X register: " << byte2hex(cpu->X) << std::endl;
     std::cout << "Y register: " << byte2hex(cpu->Y) << std::endl;
+
+    std::cout << std::endl;
+    DisplayFlags(cpu->flags);
+    std::cout << std::endl;
 
     logMemRange(dataBus, hex2doublebyte("00F0"), hex2doublebyte("00F4"));
 

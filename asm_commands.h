@@ -19,6 +19,16 @@ enum AddressingMode {
     IMPLIED
 };
 
+typedef void (*OpCodeFunction)(CPU6502*, DataBus*, std::vector<uint8_t>, AddressingMode);
+
+struct OpCodeInformation {
+    OpCodeFunction opCodeToCall;
+    std::string mnemonicName;
+    AddressingMode addressingMode;
+    uint8_t bytes;
+    uint8_t cycles;
+};
+
 DECLARE_COMMAND(LDA);
 DECLARE_COMMAND(LDX);
 DECLARE_COMMAND(LDY);
@@ -48,16 +58,6 @@ TYA (Transfer Y to A)    $98
 DEY (DEcrement Y)        $88
 INY (INcrement Y)        $C8
 */
-
-typedef void (*OpCodeFunction)(CPU6502*, DataBus*, std::vector<uint8_t>, AddressingMode);
-
-struct OpCodeInformation {
-    OpCodeFunction opCodeToCall;
-    std::string mnemonicName;
-    AddressingMode addressingMode;
-    uint8_t bytes;
-    uint8_t cycles;
-};
 
 // Add OpCode lookup table
 // {OpCode, {OpFunction, Mode, Bytes, Cycles}}

@@ -6,6 +6,17 @@
 #define RAM_SIZE 65536
 
 
+struct Flags {
+    bool negative;
+    bool overflow;
+    
+    bool breakbit;
+    bool binary_decimal;
+    bool interrupt;
+    bool zero;
+    bool carry;
+};
+
 class CPU6502 {
     public:
         uint16_t PC;
@@ -13,7 +24,7 @@ class CPU6502 {
         uint8_t X;
         uint8_t Y;
         uint8_t SP;
-        uint8_t flags;
+        Flags flags;
 
         CPU6502();
 };
