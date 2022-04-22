@@ -9,6 +9,7 @@ void SetProgramEntryPoint(CPU6502 * cpu, uint16_t startingAddress);
 void FetchExecuteLoop(CPU6502 * cpu, DataBus * databus, uint16_t stopAddress);
 bool validFile(std::string fileName);
 bool getInputFiles(int argc, char ** argv, std::string * assemblyfile, std::string * addressesToCheckFile);
+void setupCPU(CPU6502 * cpu, DataBus * databus, std::string assemblyFilePath, std::string addressToCheckFilePath);
 
 int main(int argc, char ** argv){
     std::string assemblyFilePath = "";
@@ -23,9 +24,21 @@ int main(int argc, char ** argv){
         return -1;  
     }
 
-    DataBus mainDataBus;
-    CPU6502 mainCpu;
+    DataBus * mainDataBus = new DataBus;
+    CPU6502 * mainCpu = new CPU6502;
 
+    setupCPU(mainCpu, mainDataBus, assemblyFilePath, addressToCheckFilePath);
+
+    std::cout << "Beginning CPU execution" << std::endl;
+    FetchExecuteLoop(mainCpu, mainDataBus, hex2doublebyte("D000"));
+
+    delete mainCpu;
+    delete mainDataBus;
+    return 0;
+}
+
+
+void setupCPU(CPU6502 * cpu, DataBus * databus, std::string assemblyFilePath, std::string addressToCheckFilePath){
     Loader6502 * loader = new Loader6502 {assemblyFilePath};
     if (addressToCheckFilePath != ""){
         delete loader;
@@ -34,18 +47,12 @@ int main(int argc, char ** argv){
 
     uint16_t programEntryPoint = 0;
     if (loader->recordRead){
-        programEntryPoint = loader->burn(&mainDataBus);
+        programEntryPoint = loader->burn(databus);
     }
     delete loader;
 
-    SetProgramEntryPoint(&mainCpu, programEntryPoint);
-
-    std::cout << "Beginning CPU execution" << std::endl;
-    FetchExecuteLoop(&mainCpu, &mainDataBus, hex2doublebyte("D000"));
-
-    return 0;
+    SetProgramEntryPoint(cpu, programEntryPoint);
 }
-
 
 bool getInputFiles(int argc, char ** argv, std::string * assemblyfile, std::string * addressesToCheckFile){
     std::string assemblyFilePath;
