@@ -5,8 +5,19 @@ SRecordType parseStringToRecordType(std::string rawSRecordType);
 
 Loader6502::Loader6502(std::string fileName){
     this->fileName = fileName;
+    //this->examineAddresses = false;
     this->fileStream.open(this->fileName);
 }
+
+/*
+Loader6502::Loader6502(std::string fileName, std::string addressFileName){
+    this->fileName = fileName;
+    this->addressFileName = addressFileName;
+
+    this->examineAddresses = true;
+    this->fileStream.open(this->fileName);
+}
+*/
 
 Loader6502::~Loader6502(){
     this->fileStream.close();
