@@ -13,47 +13,53 @@ void LoadIntoRegister(uint8_t * registerToPopulate, CPU6502 * cpu, DataBus * dat
     *registerToPopulate = databusReadValue;
 }
 
+uint16_t GetZeroPageAddress(std::vector<uint8_t> dataParams){
+    return (uint16_t) dataParams.at(0);
+}
+
+uint16_t GetAbsoluteAddress(std::vector<uint8_t> dataParams){
+    return (uint16_t)((dataParams.at(1) << 8) | (dataParams.at(0)));
+}
+
+
 void SaveToMemory(uint8_t * registerToTransfer, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
     uint8_t databusWriteValue = *registerToTransfer;
 
     if (addressingMode == AddressingMode::ZERO_PAGE){
-        uint16_t qualifiedAddress = (uint16_t)dataParams.at(0);
+        uint16_t qualifiedAddress = GetZeroPageAddress(dataParams);
         dataBus->Write(qualifiedAddress, databusWriteValue);
     }else if (addressingMode == AddressingMode::ABSOLUTE){
-        uint16_t qualifiedAddress = (dataParams.at(1) << 8) | (dataParams.at(0));
+        uint16_t qualifiedAddress = GetAbsoluteAddress(dataParams);
         std::cout << byte2doublehex(qualifiedAddress) << std::endl;
         dataBus->Write(qualifiedAddress, databusWriteValue);
     }
 }
 
-void LDA(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
+COMMAND_IMPL(LDA){
     LoadIntoRegister(&(cpu->A), cpu, dataBus, dataParams, addressingMode);
 }
 
-void STA(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
+COMMAND_IMPL(STA){
     SaveToMemory(&(cpu->A), cpu, dataBus, dataParams, addressingMode);
 }
 
-void STX(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
+COMMAND_IMPL(STX){
     SaveToMemory(&(cpu->X), cpu, dataBus, dataParams, addressingMode);
 }
 
-void STY(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
+COMMAND_IMPL(STY){
     SaveToMemory(&(cpu->Y), cpu, dataBus, dataParams, addressingMode);
 }
 
-
-void LDX(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
+COMMAND_IMPL(LDX){
     LoadIntoRegister(&(cpu->X), cpu, dataBus, dataParams, addressingMode);
 }
 
-void LDY(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
+COMMAND_IMPL(LDY){
     LoadIntoRegister(&(cpu->Y), cpu, dataBus, dataParams, addressingMode);
 }
 
-void NOOP(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
-
-}
+COMMAND_IMPL(NOOP){}
 
 void logMem(DataBus * dataBus){
     for (uint16_t address : dataBus->addressesToExamine){
@@ -120,7 +126,7 @@ void logZeroPage(DataBus * dataBus){
     }
 }
 
-void BRK(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
+COMMAND_IMPL(BRK){
     std::cout << "A: $" << byte2hex(cpu->A) << ", ";
     std::cout << "X: $" << byte2hex(cpu->X) << ", ";
     std::cout << "Y: $" << byte2hex(cpu->Y) << std::endl;
@@ -133,3 +139,13 @@ void BRK(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, Addr
 
 }
 
+COMMAND_IMPL(JMP){
+    if (addressingMode == AddressingMode::ABSOLUTE){
+        uint16_t address = GetAbsoluteAddress(dataParams);
+        cpu->PC = address - 3;
+    }
+}
+
+COMMAND_IMPL(RTS){
+    
+}

@@ -29,7 +29,7 @@ int main(int argc, char ** argv){
     setupCPU(mainCpu, mainDataBus, assemblyFilePath, addressToCheckFilePath);
 
     std::cout << "Beginning CPU execution" << std::endl;
-    FetchExecuteLoop(mainCpu, mainDataBus, hex2doublebyte("D000"));
+    FetchExecuteLoop(mainCpu, mainDataBus, hex2doublebyte("FFFF"));
 
     delete mainCpu;
     delete mainDataBus;
@@ -70,6 +70,14 @@ std::vector<uint8_t> parseDataParameters(CPU6502 * cpu, DataBus * databus, OpCod
     return dataParameters;
 }
 
+void LogCommand(OpCodeInformation opInformation){
+    std::cout << "Running: " << opInformation.mnemonicName << std::endl;
+}
+
+void LogAddress(uint16_t address){
+    std::cout << "Address: " << byte2doublehex(address) << std::endl;
+}
+
 void FetchExecuteLoop(CPU6502 * cpu, DataBus * databus, uint16_t stopAddress){
     while (cpu->PC != stopAddress){
         //fetch
@@ -78,6 +86,13 @@ void FetchExecuteLoop(CPU6502 * cpu, DataBus * databus, uint16_t stopAddress){
         //Execute
         OpCodeInformation opInformation = OpCodeLookupTable.at(byte2hex(currentInstruction));
         std::vector<uint8_t> dataParameters = parseDataParameters(cpu, databus, opInformation);
+        
+        if (opInformation.mnemonicName != "NOP" && opInformation.mnemonicName != "RTS"){
+            LogCommand(opInformation);
+        }else if (opInformation.mnemonicName == "RTS"){
+            break;
+        }
+        
         opInformation.opCodeToCall(cpu, databus, dataParameters, opInformation.addressingMode);
 
         //Increment

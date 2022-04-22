@@ -3,7 +3,7 @@
 #include <map>
 #include <vector>
 
-#define DECLARE_COMMAND(CMDNAME) void CMDNAME(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode);
+#define COMMAND_IMPL(CMDNAME) void CMDNAME(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode)
 
 //TODO: Add addressing mode ENUM
 
@@ -16,7 +16,8 @@ enum AddressingMode {
     ABSOLUTE_Y,
     INDIRECT_X,
     INDIRECT_Y,
-    IMPLIED
+    IMPLIED,
+    INDIRECT
 };
 
 typedef void (*OpCodeFunction)(CPU6502*, DataBus*, std::vector<uint8_t>, AddressingMode);
@@ -29,18 +30,18 @@ struct OpCodeInformation {
     uint8_t cycles;
 };
 
-DECLARE_COMMAND(LDA);
-DECLARE_COMMAND(LDX);
-DECLARE_COMMAND(LDY);
-DECLARE_COMMAND(STA);
-DECLARE_COMMAND(STX);
-DECLARE_COMMAND(STY);
-DECLARE_COMMAND(NOOP);
-DECLARE_COMMAND(BRK);
-DECLARE_COMMAND(TAX);
-DECLARE_COMMAND(TAY);
-DECLARE_COMMAND(TXA);
-DECLARE_COMMAND(TYA);
+COMMAND_IMPL(LDA);
+COMMAND_IMPL(LDX);
+COMMAND_IMPL(LDY);
+COMMAND_IMPL(STA);
+COMMAND_IMPL(STX);
+COMMAND_IMPL(STY);
+COMMAND_IMPL(NOOP);
+COMMAND_IMPL(BRK);
+COMMAND_IMPL(TAX);
+COMMAND_IMPL(TAY);
+COMMAND_IMPL(TXA);
+COMMAND_IMPL(TYA);
 
 /*
 Register Instructions
@@ -59,6 +60,12 @@ DEY (DEcrement Y)        $88
 INY (INcrement Y)        $C8
 */
 
+/* Jump instructions */
+COMMAND_IMPL(JMP);
+
+/* Stack instructions */
+COMMAND_IMPL(RTS);
+
 // Add OpCode lookup table
 // {OpCode, {OpFunction, Mode, Bytes, Cycles}}
 const std::map<std::string, OpCodeInformation> OpCodeLookupTable = {
@@ -74,6 +81,8 @@ const std::map<std::string, OpCodeInformation> OpCodeLookupTable = {
     {"8E", {&STX, "STX", AddressingMode::ABSOLUTE, 3, 4}},
     {"84", {&STY, "STY", AddressingMode::ZERO_PAGE, 2, 3}},
     {"8C", {&STY, "STY", AddressingMode::ABSOLUTE, 3, 4}},
+    {"4C", {&JMP, "JMP", AddressingMode::ABSOLUTE, 3, 3}},
+    {"60", {&RTS, "RTS", AddressingMode::IMPLIED, 1, 6}}
 };
 
 //

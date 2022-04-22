@@ -35,7 +35,7 @@ uint16_t Loader6502::burn(DataBus * dataBus){
     dataBus->addressesToExamine = this->addressesToExamine;
 
     uint16_t addressIter = hex2doublebyte("0000");
-    for (addressIter = hex2doublebyte("0000"); byte2doublehex(addressIter+1) != "FFFF"; addressIter++){
+    for (addressIter = hex2doublebyte("0000"); byte2doublehex(addressIter+1) != "0000"; addressIter++){
         dataBus->Write(addressIter, hex2byte("EA"));
     }
 
@@ -45,6 +45,7 @@ uint16_t Loader6502::burn(DataBus * dataBus){
         }
 
         uint16_t addressToWrite = record.recordStartingAddress;
+
         for (uint8_t dataElem : record.recordData){
             dataBus->Write(addressToWrite, dataElem);
             addressToWrite += 1;

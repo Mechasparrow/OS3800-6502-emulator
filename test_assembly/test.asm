@@ -12,3 +12,10 @@ program:
     LDA #$AA
     STA $00FA
     BRK
+    JMP tester
+    ORG $D000
+
+tester:
+    LDA #$BB
+    BRK
+    RTS 
