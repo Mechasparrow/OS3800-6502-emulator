@@ -55,10 +55,10 @@ void NOOP(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, Add
 
 }
 
-void logMemRange(DataBus * dataBus, uint16_t start, uint16_t end){
-    for (uint16_t address = start; address <= end; address++){
+void logMem(DataBus * dataBus){
+    for (uint16_t address : dataBus->addressesToExamine){
         uint8_t value = dataBus->Read(address);
-        std::cout << byte2doublehex(address) << ": " << byte2hex(value) << std::endl;
+        std::cout << "$" << byte2doublehex(address) << ": " << byte2hex(value) << std::endl;
     }
 }
 
@@ -121,17 +121,15 @@ void logZeroPage(DataBus * dataBus){
 }
 
 void BRK(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
-    std::cout << "Debug state values here: " << std::endl;
-
-    std::cout << "A register: " << byte2hex(cpu->A) << std::endl;
-    std::cout << "X register: " << byte2hex(cpu->X) << std::endl;
-    std::cout << "Y register: " << byte2hex(cpu->Y) << std::endl;
+    std::cout << "A: $" << byte2hex(cpu->A) << ", ";
+    std::cout << "X: $" << byte2hex(cpu->X) << ", ";
+    std::cout << "Y: $" << byte2hex(cpu->Y) << std::endl;
 
     std::cout << std::endl;
     DisplayFlags(cpu->flags);
     std::cout << std::endl;
 
-    logMemRange(dataBus, hex2doublebyte("00F0"), hex2doublebyte("00F4"));
+    logMem(dataBus);
 
 }
 

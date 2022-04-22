@@ -4,6 +4,7 @@
 #include <map>
 #include "../hexlib/hex_lib.h"
 #include "../6502_lib.h"
+#include <filesystem>
 
 //For s19 records: We can assume that
 //only S0, S1, S5, and S9 is used
@@ -49,15 +50,22 @@ class SRecord {
 class Loader6502 {
     public:
         Loader6502(std::string fileName);
+        Loader6502(std::string fileName, std::string addressFile);
         ~Loader6502();
 
-        uint16_t burnRecords(DataBus * dataBus);
-        void readFileContents();
+        uint16_t burn(DataBus * dataBus);
 
         bool recordRead;
+        bool fileExists;
     private: 
-        std::string fileName;
+        void readProgram();
+        void readAddresses();
+
+        void sharedInit(std::string fileName);
+
+        std::vector<uint16_t> addressesToExamine;
         std::ifstream fileStream;
-        std::vector<SRecord> records;
-        
+        std::ifstream addressFileStream;
+
+        std::vector<SRecord> records;       
 };

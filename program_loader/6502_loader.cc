@@ -3,31 +3,37 @@
 SRecord parseSRecordString(std::string rawSRecord);
 SRecordType parseStringToRecordType(std::string rawSRecordType);
 
+void Loader6502::sharedInit(std::string fileName){
+    this->fileStream.open(fileName);
+    this->readProgram();
+}
+
 Loader6502::Loader6502(std::string fileName){
-    this->fileName = fileName;
-    //this->examineAddresses = false;
-    this->fileStream.open(this->fileName);
+    this->sharedInit(fileName);    
 }
 
-/*
 Loader6502::Loader6502(std::string fileName, std::string addressFileName){
-    this->fileName = fileName;
-    this->addressFileName = addressFileName;
+    this->sharedInit(fileName);
 
-    this->examineAddresses = true;
-    this->fileStream.open(this->fileName);
+    this->addressFileStream.open(addressFileName);
+    this->readAddresses();
 }
-*/
 
 Loader6502::~Loader6502(){
-    this->fileStream.close();
+    if (this->fileStream.is_open()){
+        this->fileStream.close();
+    }
+
+    if (this->addressFileStream.is_open()){
+        this->addressFileStream.close();
+    }
 }
 
 //burn into RAM
-uint16_t Loader6502::burnRecords(DataBus * dataBus){
-    //NOTE: only concern ourselves with only Data16 records
+uint16_t Loader6502::burn(DataBus * dataBus){
 
-    //TODO burn all records as NOP initially
+    dataBus->addressesToExamine = this->addressesToExamine;
+
     uint16_t addressIter = hex2doublebyte("0000");
     for (addressIter = hex2doublebyte("0000"); byte2doublehex(addressIter+1) != "FFFF"; addressIter++){
         dataBus->Write(addressIter, hex2byte("EA"));
@@ -41,9 +47,6 @@ uint16_t Loader6502::burnRecords(DataBus * dataBus){
         uint16_t addressToWrite = record.recordStartingAddress;
         for (uint8_t dataElem : record.recordData){
             dataBus->Write(addressToWrite, dataElem);
-            
-            //std::cout << byte2doublehex(addressToWrite) << ": " << byte2hex(dataElem) << std::endl;
-
             addressToWrite += 1;
         }
     }
@@ -51,7 +54,7 @@ uint16_t Loader6502::burnRecords(DataBus * dataBus){
     return this->records.at(this->records.size()-1).recordStartingAddress;
 }
 
-void Loader6502::readFileContents(){
+void Loader6502::readProgram(){
     //https://en.wikipedia.org/wiki/SREC_(file_format)
 
     //Read S type
@@ -63,6 +66,22 @@ void Loader6502::readFileContents(){
         }
 
         this->recordRead = true;
+    }else{
+        std::cout << "Unable to open file" << std::endl;
+    }
+}
+
+void Loader6502::readAddresses(){
+//https://en.wikipedia.org/wiki/SREC_(file_format)
+
+    //Read S type
+    std::string addressLine;
+    if (this->addressFileStream.is_open()){
+        while (std::getline(this->addressFileStream, addressLine)){
+            std::string processedAddress = addressLine.substr(1,4);
+            uint16_t parsedAddress = hex2doublebyte(processedAddress);
+            this->addressesToExamine.insert(this->addressesToExamine.end(), parsedAddress);
+        }
     }else{
         std::cout << "Unable to open file" << std::endl;
     }

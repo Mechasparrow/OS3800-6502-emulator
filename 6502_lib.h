@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #ifndef CPU
 #define CPU
@@ -32,6 +33,8 @@ class CPU6502 {
 class DataBus {
     public:
         uint8_t RAM[RAM_SIZE];
+        std::vector<uint16_t> addressesToExamine;
+
         DataBus();
 
         uint8_t Read(uint16_t address);
