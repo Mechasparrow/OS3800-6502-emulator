@@ -10,7 +10,7 @@ The following 6502 arithmetic instructions will be implemented:
 - [ ] INC
 - [ ] INX
 - [ ] INY
-- [ ] ADC
+- [x] ADC
 - [ ] SBC
 - [ ] CLC
 - [ ] SEC

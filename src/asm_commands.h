@@ -64,7 +64,8 @@ COMMAND_IMPL(TXA);
 COMMAND_IMPL(TAY);
 COMMAND_IMPL(TYA);
 
-
+/* Arithmetic instructions */
+COMMAND_IMPL(ADC);
 
 /* Jump instructions */
 COMMAND_IMPL(JMP);
@@ -76,10 +77,15 @@ COMMAND_IMPL(RTS);
 // {OpCode, {OpFunction, Mode, Bytes, Cycles}}
 const std::map<std::string, OpCodeInformation> OpCodeLookupTable = {
     {"EA", {&NOOP, "NOP", AddressingMode::IMPLIED, 1, 1}},
-    {"A9", {&LDA, "LDA", AddressingMode::IMMEDIATE, 2, 2}},
-    {"AD", {&LDA, "LDA", AddressingMode::ABSOLUTE, 3, 4}},
     {"A0", {&LDY, "LDY", AddressingMode::IMMEDIATE, 2, 2}},
+    {"A4", {&LDY, "LDY", AddressingMode::ZERO_PAGE, 2, 3}},
+    {"AC", {&LDY, "LDY", AddressingMode::ABSOLUTE, 3, 4}},
+    {"A9", {&LDA, "LDA", AddressingMode::IMMEDIATE, 2, 2}},
+    {"A5", {&LDA, "LDA", AddressingMode::ZERO_PAGE, 2, 3}},
+    {"AD", {&LDA, "LDA", AddressingMode::ABSOLUTE, 3, 4}},
     {"A2", {&LDX, "LDX", AddressingMode::IMMEDIATE, 2, 2}},
+    {"A6", {&LDX, "LDX", AddressingMode::ZERO_PAGE, 2, 3}},
+    {"AE", {&LDX, "LDX", AddressingMode::ABSOLUTE, 3, 4}},  
     {"00", {&BRK, "BRK", AddressingMode::IMPLIED, 1, 1}},
     {"85", {&STA, "STA", AddressingMode::ZERO_PAGE, 2, 3}},
     {"8D", {&STA, "STA", AddressingMode::ABSOLUTE, 3, 4}},
@@ -93,6 +99,9 @@ const std::map<std::string, OpCodeInformation> OpCodeLookupTable = {
     {"8A", {&TXA, "TXA", AddressingMode::IMPLIED, 1, 2}},
     {"A8", {&TAY, "TAY", AddressingMode::IMPLIED, 1, 2}},
     {"98", {&TYA, "TYA", AddressingMode::IMPLIED, 1, 2}},
+    {"69", {&ADC, "ADC", AddressingMode::IMMEDIATE, 2, 2}},
+    {"65", {&ADC, "ADC", AddressingMode::ZERO_PAGE, 2, 3}},
+    {"6D", {&ADC, "ADC", AddressingMode::ABSOLUTE, 3, 4}}
 };
 
 //

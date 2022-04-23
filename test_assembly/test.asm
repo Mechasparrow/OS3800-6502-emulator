@@ -5,15 +5,13 @@
 ;
 ; Notes:  Clobbers A, X, Y. Each * in the pattern uses 4 bytes of stack.
 ;
-FIBCOUNT = $B010
+
+FIBCOUNT = $B001
 
     ORG $C000
 program:
-    LDA #$10
+    LDA #10 
+    STA FIBCOUNT
     BRK
-    TAY
-    BRK 
-    LDY #$20
-    TYA 
+    LDY FIBCOUNT
     BRK
-    

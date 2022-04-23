@@ -1,38 +1,45 @@
 #include "asm_commands.h"
 
-void LoadIntoRegister(uint8_t * registerToPopulate, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
-    uint8_t databusReadValue = 0;
+uint8_t getFlagBit(bool bit);
 
+void DisplayFlags (Flags flags);
+
+uint16_t GrabRefinedAddress(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
     if (addressingMode == AddressingMode::IMMEDIATE){
-        databusReadValue = dataParams.at(0);
-    }else{
-        uint16_t effectiveAddress = (dataParams.at(1) << 8) | (dataParams.at(0));
-        databusReadValue = dataBus->Read(effectiveAddress);
+        return (uint16_t)(cpu->PC + 1);
+    }else if (addressingMode == AddressingMode::ZERO_PAGE){
+        return (uint16_t) dataParams.at(0);
+    }else {  
+        // Absolute addressing
+        return (uint16_t)((dataParams.at(1) << 8) | (dataParams.at(0)));
     }
-
-    *registerToPopulate = databusReadValue;
 }
 
-uint16_t GetZeroPageAddress(std::vector<uint8_t> dataParams){
-    return (uint16_t) dataParams.at(0);
+void LoadIntoRegister(uint8_t * registerToPopulate, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
+    uint16_t effectiveAddress = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    std::cout << "effective address: " << byte2doublehex(effectiveAddress) << std::endl;
+    *registerToPopulate = dataBus->Read(effectiveAddress);
 }
-
-uint16_t GetAbsoluteAddress(std::vector<uint8_t> dataParams){
-    return (uint16_t)((dataParams.at(1) << 8) | (dataParams.at(0)));
-}
-
 
 void SaveToMemory(uint8_t * registerToTransfer, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
     uint8_t databusWriteValue = *registerToTransfer;
+    uint16_t qualifiedAddress = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    dataBus->Write(qualifiedAddress, databusWriteValue);
+}
 
-    if (addressingMode == AddressingMode::ZERO_PAGE){
-        uint16_t qualifiedAddress = GetZeroPageAddress(dataParams);
-        dataBus->Write(qualifiedAddress, databusWriteValue);
-    }else if (addressingMode == AddressingMode::ABSOLUTE){
-        uint16_t qualifiedAddress = GetAbsoluteAddress(dataParams);
-        std::cout << byte2doublehex(qualifiedAddress) << std::endl;
-        dataBus->Write(qualifiedAddress, databusWriteValue);
-    }
+COMMAND_IMPL(ADC){
+    uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    uint8_t numberToAdd = dataBus->Read(absAddr);
+    uint8_t carry = getFlagBit(cpu->flags.carry);
+
+    uint16_t tempSum = (uint16_t)cpu->A + (uint16_t)numberToAdd + (uint16_t)carry; 
+
+    cpu->flags.carry = tempSum > 255;
+    cpu->flags.zero = (tempSum & 0x00FF) == 0;
+    cpu->flags.overflow = (~((uint16_t)cpu->A ^ (uint16_t)numberToAdd) & ((uint16_t)cpu->A ^ (uint16_t)tempSum)) & 0x0080;
+    cpu->flags.negative = (tempSum & 0x0080);
+
+    cpu->A = tempSum & 0x00FF;
 }
 
 COMMAND_IMPL(LDA){
@@ -68,64 +75,6 @@ void logMem(DataBus * dataBus){
     }
 }
 
-char getFlagBit(bool bit){
-    return bit ? '1' : '0';
-}
-
-void DisplayFlags (Flags flags){
-    std::cout << "N V - B D I Z C" << std::endl;
-    
-    //Negative Flag
-    std::cout << getFlagBit(flags.negative);
-    std::cout << " "; 
-    
-    //Overflow flag
-    std::cout << getFlagBit(flags.overflow);
-    std::cout << " "; 
-    
-    //Placeholder flag
-    std::cout << getFlagBit(false);
-    std::cout << " "; 
-    
-    //Break flag
-    std::cout << getFlagBit(flags.breakbit);
-    std::cout << " "; 
-
-    // Decimal flag
-    std::cout << getFlagBit(flags.binary_decimal);
-    std::cout << " "; 
-    
-    //Interrupt flag
-    std::cout << getFlagBit(flags.interrupt);
-    std::cout << " "; 
-    
-    // Zero flag
-    std::cout << getFlagBit(flags.zero);
-    std::cout << " "; 
-    
-    //Carry flag
-    std::cout << getFlagBit(flags.carry);
-    std::cout << " "; 
-    
-    std::cout << std::endl;
-}
-
-void logZeroPage(DataBus * dataBus){
-    uint8_t addressIterX;
-    uint8_t addressIterY;
-
-
-    for (addressIterY = 0; addressIterY < 4; addressIterY++){
-        for (addressIterX = 0; addressIterX < 4; addressIterX++) {
-            uint16_t fullAddress = addressIterY << 8 | (uint16_t) addressIterX;
-
-            std::cout << std::hex << byte2hex(dataBus->Read(fullAddress)) << std::dec << " ";
-        }
-
-        std::cout << std::endl;
-    }
-}
-
 COMMAND_IMPL(BRK){
     std::cout << "A: $" << byte2hex(cpu->A) << ", ";
     std::cout << "X: $" << byte2hex(cpu->X) << ", ";
@@ -140,10 +89,8 @@ COMMAND_IMPL(BRK){
 }
 
 COMMAND_IMPL(JMP){
-    if (addressingMode == AddressingMode::ABSOLUTE){
-        uint16_t address = GetAbsoluteAddress(dataParams);
-        cpu->PC = address - 3;
-    }
+    uint16_t address = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    cpu->PC = address - 3;
 }
 
 COMMAND_IMPL(TXA){
@@ -164,4 +111,62 @@ COMMAND_IMPL(TAY){
 
 COMMAND_IMPL(RTS){
 
+}
+
+uint8_t getFlagBit(bool bit){
+    return bit ? 1 : 0;
+}
+
+void DisplayFlags (Flags flags){
+    std::cout << "N V - B D I Z C" << std::endl;
+    
+    //Negative Flag
+    std::cout << (int)getFlagBit(flags.negative);
+    std::cout << " "; 
+    
+    //Overflow flag
+    std::cout << (int)getFlagBit(flags.overflow);
+    std::cout << " "; 
+    
+    //Placeholder flag
+    std::cout << (int)getFlagBit(false);
+    std::cout << " "; 
+    
+    //Break flag
+    std::cout << (int)getFlagBit(flags.breakbit);
+    std::cout << " "; 
+
+    // Decimal flag
+    std::cout << (int)getFlagBit(flags.binary_decimal);
+    std::cout << " "; 
+    
+    //Interrupt flag
+    std::cout << (int)getFlagBit(flags.interrupt);
+    std::cout << " "; 
+    
+    // Zero flag
+    std::cout << (int)getFlagBit(flags.zero);
+    std::cout << " "; 
+    
+    //Carry flag
+    std::cout << (int)getFlagBit(flags.carry);
+    std::cout << " "; 
+    
+    std::cout << std::endl;
+}
+
+void logZeroPage(DataBus * dataBus){
+    uint8_t addressIterX;
+    uint8_t addressIterY;
+
+
+    for (addressIterY = 0; addressIterY < 4; addressIterY++){
+        for (addressIterX = 0; addressIterX < 4; addressIterX++) {
+            uint16_t fullAddress = addressIterY << 8 | (uint16_t) addressIterX;
+
+            std::cout << std::hex << byte2hex(dataBus->Read(fullAddress)) << std::dec << " ";
+        }
+
+        std::cout << std::endl;
+    }
 }
