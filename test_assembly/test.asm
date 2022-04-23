@@ -10,10 +10,14 @@ FIBCOUNT = $B001
 
     ORG $C000
 program:
-    LDA #00
-    LDX #01
-    STX FIBCOUNT
-    BRK
+    INX
+    INY
+    LDA #$00
+    STA FIBCOUNT
 
-    SBC FIBCOUNT
+    INC FIBCOUNT
+    INC FIBCOUNT
+    INC FIBCOUNT
+    INC FIBCOUNT
+    
     BRK
