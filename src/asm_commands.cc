@@ -89,6 +89,10 @@ COMMAND_IMPL(CLC){
     cpu->flags.carry = 0;
 }
 
+COMMAND_IMPL(CLV){
+    cpu->flags.overflow = 0;
+}
+
 COMMAND_IMPL(SEC){
     cpu->flags.carry = 1;
 }
