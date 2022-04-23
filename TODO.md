@@ -12,8 +12,8 @@ The following 6502 arithmetic instructions will be implemented:
 - [x] INY
 - [x] ADC
 - [x] SBC
-- [ ] CLC
-- [ ] SEC
+- [x] CLC
+- [x] SEC
 
 # Data Instructions
 The following 6502 data instructions will be implemented.  

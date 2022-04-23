@@ -10,7 +10,11 @@ FIBCOUNT = $B001
 
     ORG $C000
 program:
-    CLC
+    LDA #$08
+    LDY #$05
+    STY FIBCOUNT
+    
     BRK
-    SEC
+    SEC 
+    SBC FIBCOUNT
     BRK
