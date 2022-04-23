@@ -45,13 +45,13 @@ COMMAND_IMPL(ADC){
 COMMAND_IMPL(SBC){
     uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
     uint8_t carry = getFlagBit(cpu->flags.carry);
-    uint8_t subValue = (((uint16_t) dataBus->Read(absAddr)) ^ 0xFF) + 1;
+    uint8_t subValue = (((uint16_t) dataBus->Read(absAddr)) ^ 0xFF);
 
     uint16_t tempSum = (uint16_t)cpu->A + (uint16_t)subValue + (uint16_t)carry; 
 
     cpu->flags.carry = tempSum & 0xFF00;
     cpu->flags.zero = (tempSum & 0x00FF) == 0;
-    cpu->flags.overflow = (~((uint16_t)cpu->A ^ (uint16_t)tempSum) & ((uint16_t)cpu->A ^ (uint16_t)tempSum)) & 0x0080;
+    cpu->flags.overflow = (tempSum ^ (uint16_t)cpu->A) & (tempSum ^ subValue) & 0x0080;
     cpu->flags.negative = (tempSum & 0x0080);
 
     cpu->A = tempSum & 0x00FF;
@@ -83,6 +83,14 @@ COMMAND_IMPL(DEX){
 
 COMMAND_IMPL(DEY){
     cpu->Y = cpu->Y - 1;
+}
+
+COMMAND_IMPL(CLC){
+    cpu->flags.carry = 0;
+}
+
+COMMAND_IMPL(SEC){
+    cpu->flags.carry = 1;
 }
 
 

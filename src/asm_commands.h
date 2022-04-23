@@ -73,6 +73,8 @@ COMMAND_IMPL(INX);
 COMMAND_IMPL(DEC);
 COMMAND_IMPL(DEY);
 COMMAND_IMPL(DEX);
+COMMAND_IMPL(SEC);
+COMMAND_IMPL(CLC);
 
 /* Jump instructions */
 COMMAND_IMPL(JMP);
@@ -124,6 +126,9 @@ const std::map<std::string, OpCodeInformation> OpCodeLookupTable = {
     {"88", {&DEY, "DEY", AddressingMode::IMPLIED, 1, 2}},
     {"C6", {&DEC, "DEC", AddressingMode::ZERO_PAGE, 2, 5}},
     {"CE", {&DEC, "DEC", AddressingMode::ABSOLUTE, 3, 6}},
+
+    {"38", {&SEC, "SEC", AddressingMode::IMPLIED, 1, 2}},
+    {"18", {&CLC, "CLC", AddressingMode::IMPLIED, 1, 2}}
 };
 
 //
