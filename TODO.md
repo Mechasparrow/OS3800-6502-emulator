@@ -4,12 +4,12 @@ The software-defined MOS 6502 CPU will be abstracted into a single data structur
 # Arithmetic Instructions
 
 The following 6502 arithmetic instructions will be implemented: 
-- [ ] DEC
-- [ ] DEX
-- [ ] DEY
-- [ ] INC
-- [ ] INX
-- [ ] INY
+- [x] DEC
+- [x] DEX
+- [x] DEY
+- [x] INC
+- [x] INX
+- [x] INY
 - [x] ADC
 - [x] SBC
 - [ ] CLC

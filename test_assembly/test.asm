@@ -19,5 +19,14 @@ program:
     INC FIBCOUNT
     INC FIBCOUNT
     INC FIBCOUNT
+
+    BRK
+
+    DEX
+    DEY
+    DEC FIBCOUNT
+    DEC FIBCOUNT
+    DEC FIBCOUNT
+    DEC FIBCOUNT
     
     BRK

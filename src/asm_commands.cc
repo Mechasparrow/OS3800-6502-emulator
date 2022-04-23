@@ -71,6 +71,20 @@ COMMAND_IMPL(INY){
     cpu->Y = cpu->Y + 1;
 }
 
+COMMAND_IMPL(DEC){
+    uint16_t qualifiedAddress = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    uint8_t currentMemValue = dataBus->Read(qualifiedAddress);
+    dataBus->Write(qualifiedAddress, currentMemValue - 1);
+}
+
+COMMAND_IMPL(DEX){
+    cpu->X = cpu->X - 1;
+}
+
+COMMAND_IMPL(DEY){
+    cpu->Y = cpu->Y - 1;
+}
+
 
 COMMAND_IMPL(LDA){
     LoadIntoRegister(&(cpu->A), cpu, dataBus, dataParams, addressingMode);
