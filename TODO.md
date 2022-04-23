@@ -11,7 +11,7 @@ The following 6502 arithmetic instructions will be implemented:
 - [ ] INX
 - [ ] INY
 - [x] ADC
-- [ ] SBC
+- [x] SBC
 - [ ] CLC
 - [ ] SEC
 

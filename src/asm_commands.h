@@ -66,6 +66,7 @@ COMMAND_IMPL(TYA);
 
 /* Arithmetic instructions */
 COMMAND_IMPL(ADC);
+COMMAND_IMPL(SBC);
 
 /* Jump instructions */
 COMMAND_IMPL(JMP);
@@ -99,9 +100,14 @@ const std::map<std::string, OpCodeInformation> OpCodeLookupTable = {
     {"8A", {&TXA, "TXA", AddressingMode::IMPLIED, 1, 2}},
     {"A8", {&TAY, "TAY", AddressingMode::IMPLIED, 1, 2}},
     {"98", {&TYA, "TYA", AddressingMode::IMPLIED, 1, 2}},
+
     {"69", {&ADC, "ADC", AddressingMode::IMMEDIATE, 2, 2}},
     {"65", {&ADC, "ADC", AddressingMode::ZERO_PAGE, 2, 3}},
-    {"6D", {&ADC, "ADC", AddressingMode::ABSOLUTE, 3, 4}}
+    {"6D", {&ADC, "ADC", AddressingMode::ABSOLUTE, 3, 4}},
+    
+    {"E9", {&SBC, "SBC", AddressingMode::IMMEDIATE, 2, 2}},
+    {"E5", {&SBC, "SBC", AddressingMode::ZERO_PAGE, 2, 3}},
+    {"ED", {&SBC, "SBC", AddressingMode::ABSOLUTE, 3, 4}}
 };
 
 //
