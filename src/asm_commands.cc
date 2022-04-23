@@ -4,6 +4,18 @@ uint8_t getFlagBit(bool bit);
 
 void DisplayFlags (Flags flags);
 
+bool checkCarryFlag(uint8_t value){
+    return (value & 0xFF00);
+}
+
+bool checkNegativeFlag(uint8_t value){
+    return (value & 0x0080);
+}
+
+bool checkZeroFlag(uint8_t value){
+    return (value & 0x00FF) == 0;
+}
+
 uint16_t GrabRefinedAddress(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
     if (addressingMode == AddressingMode::IMMEDIATE){
         return (uint16_t)(cpu->PC + 1);
@@ -34,10 +46,10 @@ COMMAND_IMPL(ADC){
 
     uint16_t tempSum = (uint16_t)cpu->A + (uint16_t)numberToAdd + (uint16_t)carry; 
 
-    cpu->flags.carry = tempSum > 255;
-    cpu->flags.zero = (tempSum & 0x00FF) == 0;
+    cpu->flags.carry = checkCarryFlag(tempSum);
+    cpu->flags.zero = checkZeroFlag(tempSum);
     cpu->flags.overflow = (~((uint16_t)cpu->A ^ (uint16_t)numberToAdd) & ((uint16_t)cpu->A ^ (uint16_t)tempSum)) & 0x0080;
-    cpu->flags.negative = (tempSum & 0x0080);
+    cpu->flags.negative = checkNegativeFlag(tempSum);
 
     cpu->A = tempSum & 0x00FF;
 }
@@ -49,10 +61,10 @@ COMMAND_IMPL(SBC){
 
     uint16_t tempSum = (uint16_t)cpu->A + (uint16_t)subValue + (uint16_t)carry; 
 
-    cpu->flags.carry = tempSum & 0xFF00;
-    cpu->flags.zero = (tempSum & 0x00FF) == 0;
+    cpu->flags.carry = checkCarryFlag(tempSum);
+    cpu->flags.zero = checkZeroFlag(tempSum);
     cpu->flags.overflow = (tempSum ^ (uint16_t)cpu->A) & (tempSum ^ subValue) & 0x0080;
-    cpu->flags.negative = (tempSum & 0x0080);
+    cpu->flags.negative = checkNegativeFlag(tempSum);
 
     cpu->A = tempSum & 0x00FF;
 }
