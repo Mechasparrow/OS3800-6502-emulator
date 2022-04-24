@@ -4,16 +4,30 @@ uint8_t getFlagBit(bool bit);
 
 void DisplayFlags (Flags flags);
 
-bool checkCarryFlag(uint8_t value){
-    return (value & 0xFF00);
+bool checkCarryFlag(uint16_t value){
+    return value & 0xFF00;
 }
 
-bool checkNegativeFlag(uint8_t value){
+bool checkNegativeFlag(uint16_t value){
     return (value & 0x0080);
 }
 
-bool checkZeroFlag(uint8_t value){
+bool checkZeroFlag(uint16_t value){
     return (value & 0x00FF) == 0;
+}
+
+bool checkUnsignedOverflow(uint16_t sum){
+    return sum > 255;
+}
+
+bool checkSignedOverflow(int8_t sum, int8_t operA, int8_t operB){
+    if (operA > 0 && (operB * -1) < 0 && sum < 0){
+        return true;
+    }else if (operA < 0 && (operB * -1) > 0 && sum > 0){
+        return true;
+    }
+
+    return false;
 }
 
 uint16_t GrabRefinedAddress(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
@@ -45,11 +59,11 @@ COMMAND_IMPL(ADC){
     uint8_t carry = getFlagBit(cpu->flags.carry);
 
     uint16_t tempSum = (uint16_t)cpu->A + (uint16_t)numberToAdd + (uint16_t)carry; 
-
-    cpu->flags.carry = checkCarryFlag(tempSum);
-    cpu->flags.zero = checkZeroFlag(tempSum);
-    cpu->flags.overflow = (~((uint16_t)cpu->A ^ (uint16_t)numberToAdd) & ((uint16_t)cpu->A ^ (uint16_t)tempSum)) & 0x0080;
-    cpu->flags.negative = checkNegativeFlag(tempSum);
+    
+    cpu->flags.carry = checkCarryFlag((uint16_t)tempSum);
+    cpu->flags.zero = checkZeroFlag((uint16_t)tempSum);
+    cpu->flags.overflow = checkUnsignedOverflow((uint16_t)tempSum);
+    cpu->flags.negative = checkNegativeFlag((uint16_t)tempSum);
 
     cpu->A = tempSum & 0x00FF;
 }
@@ -61,10 +75,10 @@ COMMAND_IMPL(SBC){
 
     uint16_t tempSum = (uint16_t)cpu->A + (uint16_t)subValue + (uint16_t)carry; 
 
-    cpu->flags.carry = checkCarryFlag(tempSum);
-    cpu->flags.zero = checkZeroFlag(tempSum);
-    cpu->flags.overflow = (tempSum ^ (uint16_t)cpu->A) & (tempSum ^ subValue) & 0x0080;
-    cpu->flags.negative = checkNegativeFlag(tempSum);
+    cpu->flags.carry = checkCarryFlag((uint16_t)tempSum);
+    cpu->flags.zero = checkZeroFlag((uint16_t)tempSum);
+    cpu->flags.overflow = checkSignedOverflow((int8_t) tempSum, (int8_t)cpu->A, (int8_t)(subValue+carry));
+    cpu->flags.negative = checkNegativeFlag((uint16_t)tempSum);
 
     cpu->A = tempSum & 0x00FF;
 }
