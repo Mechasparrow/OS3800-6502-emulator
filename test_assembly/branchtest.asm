@@ -16,7 +16,6 @@ program:
     ;BEQ success
     BNE success
     RTS
-    NOP
 success LDA #$AA
     BRK 
     RTS

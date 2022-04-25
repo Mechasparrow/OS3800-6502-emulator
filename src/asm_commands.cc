@@ -1,25 +1,13 @@
 #include "asm_commands.h"
 
 uint8_t getFlagBit(bool bit);
-
+void logMem(DataBus * dataBus);
 void DisplayFlags (Flags flags);
 
-bool checkCarryFlag(uint16_t value){
-    return value & 0xFF00;
-}
-
-bool checkNegativeFlag(uint16_t value){
-    return (value & 0x0080);
-}
-
-bool checkZeroFlag(uint16_t value){
-    return (value & 0x00FF) == 0;
-}
-
-bool checkUnsignedOverflow(uint16_t sum){
-    return sum > 255;
-}
-
+bool checkCarryFlag(uint16_t value){return value & 0xFF00;}
+bool checkNegativeFlag(uint16_t value){return (value & 0x0080);}
+bool checkZeroFlag(uint16_t value){return (value & 0x00FF) == 0;}
+bool checkUnsignedOverflow(uint16_t sum){return sum > 255;}
 bool checkSignedOverflow(int8_t sum, int8_t operA, int8_t operB){
     if (operA > 0 && (operB * -1) < 0 && sum < 0){
         return true;
@@ -55,7 +43,8 @@ void SaveToMemory(uint8_t * registerToTransfer, CPU6502 * cpu, DataBus * dataBus
     dataBus->Write(qualifiedAddress, databusWriteValue);
 }
 
-void CompareRegisterToMemory(uint8_t * registerToCompare, CPU6502 * cpu, DataBus * dataBus, uint16_t memAddress){
+void CompareRegisterToMemory(uint8_t * registerToCompare, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
+    uint16_t memAddress = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
     uint8_t numberToCompare = dataBus->Read(memAddress);
     uint8_t registerOfInterest = *registerToCompare;
 
@@ -66,20 +55,9 @@ void CompareRegisterToMemory(uint8_t * registerToCompare, CPU6502 * cpu, DataBus
     cpu->flags.negative = checkNegativeFlag(tempDiff);
 }
 
-COMMAND_IMPL(CMP){
-    uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
-    CompareRegisterToMemory(&(cpu->A), cpu, dataBus, absAddr);
-}
-
-COMMAND_IMPL(CPX){
-    uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
-    CompareRegisterToMemory(&(cpu->X), cpu, dataBus, absAddr);
-}
-
-COMMAND_IMPL(CPY){
-    uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
-    CompareRegisterToMemory(&(cpu->Y), cpu, dataBus, absAddr);
-}
+COMMAND_IMPL(CMP){ CompareRegisterToMemory(&(cpu->A), cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(CPX){CompareRegisterToMemory(&(cpu->X), cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(CPY){ CompareRegisterToMemory(&(cpu->Y), cpu, dataBus, dataParams, addressingMode);}
 
 COMMAND_IMPL(ADC){
     uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
@@ -117,6 +95,12 @@ COMMAND_IMPL(INC){
     dataBus->Write(qualifiedAddress, currentMemValue + 1);
 }
 
+COMMAND_IMPL(DEC){
+    uint16_t qualifiedAddress = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    uint8_t currentMemValue = dataBus->Read(qualifiedAddress);
+    dataBus->Write(qualifiedAddress, currentMemValue - 1);
+}
+
 COMMAND_IMPL(INX){
     cpu->X = cpu->X + 1;
 }
@@ -125,129 +109,12 @@ COMMAND_IMPL(INY){
     cpu->Y = cpu->Y + 1;
 }
 
-COMMAND_IMPL(DEC){
-    uint16_t qualifiedAddress = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
-    uint8_t currentMemValue = dataBus->Read(qualifiedAddress);
-    dataBus->Write(qualifiedAddress, currentMemValue - 1);
-}
-
 COMMAND_IMPL(DEX){
     cpu->X = cpu->X - 1;
 }
 
 COMMAND_IMPL(DEY){
     cpu->Y = cpu->Y - 1;
-}
-
-COMMAND_IMPL(CLC){
-    cpu->flags.carry = 0;
-}
-
-COMMAND_IMPL(CLV){
-    cpu->flags.overflow = 0;
-}
-
-COMMAND_IMPL(SEC){
-    cpu->flags.carry = 1;
-}
-
-
-COMMAND_IMPL(LDA){
-    LoadIntoRegister(&(cpu->A), cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(STA){
-    SaveToMemory(&(cpu->A), cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(STX){
-    SaveToMemory(&(cpu->X), cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(STY){
-    SaveToMemory(&(cpu->Y), cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(LDX){
-    LoadIntoRegister(&(cpu->X), cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(LDY){
-    LoadIntoRegister(&(cpu->Y), cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(NOOP){}
-
-void logMem(DataBus * dataBus){
-    for (uint16_t address : dataBus->addressesToExamine){
-        uint8_t value = dataBus->Read(address);
-        std::cout << "$" << byte2doublehex(address) << ": " << byte2hex(value) << std::endl;
-    }
-}
-
-COMMAND_IMPL(BRK){
-    std::cout << "A: $" << byte2hex(cpu->A) << ", ";
-    std::cout << "X: $" << byte2hex(cpu->X) << ", ";
-    std::cout << "Y: $" << byte2hex(cpu->Y) << std::endl;
-
-    std::cout << std::endl;
-    DisplayFlags(cpu->flags);
-    std::cout << std::endl;
-
-    logMem(dataBus);
-
-}
-
-void branchOnFlagStatus( std::vector<bool *> flagsToCheck , bool flagSet, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode) {
-    uint16_t address = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
-    bool jointFlagStatus = true;
-    for (bool * flagReference : flagsToCheck){
-        bool flagStatus = *flagReference;
-        if (flagStatus == false){
-            jointFlagStatus = false;
-        }
-    }
-
-    if (jointFlagStatus == flagSet){    
-        cpu->PC = address;
-    }
-}
-
-COMMAND_IMPL(BCS){
-    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry)}, true, cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(BCC){
-    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry)}, false, cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(BMI){
-    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.negative)}, true, cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(BPL){
-    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.negative)}, false, cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(BVS){
-    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.overflow)}, true, cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(BVC){
-    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.overflow)}, false, cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(BEQ){
-    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry), &(cpu->flags.zero)}, true, cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(BNE){
-    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry), &(cpu->flags.zero)}, false, cpu, dataBus, dataParams, addressingMode);
-}
-
-COMMAND_IMPL(JMP){
-    uint16_t address = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
-    cpu->PC = address - 3;
 }
 
 COMMAND_IMPL(TXA){
@@ -266,12 +133,68 @@ COMMAND_IMPL(TAY){
     cpu->Y = cpu->A;
 }
 
-COMMAND_IMPL(RTS){
+COMMAND_IMPL(CLV){cpu->flags.overflow = 0;}
+COMMAND_IMPL(SEC){cpu->flags.carry = 1;}
+COMMAND_IMPL(CLC){cpu->flags.carry = 0;}
+COMMAND_IMPL(STA){SaveToMemory(&(cpu->A), cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(STX){SaveToMemory(&(cpu->X), cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(STY){SaveToMemory(&(cpu->Y), cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(LDA){LoadIntoRegister(&(cpu->A), cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(LDX){LoadIntoRegister(&(cpu->X), cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(LDY){LoadIntoRegister(&(cpu->Y), cpu, dataBus, dataParams, addressingMode);}
 
+void branchOnFlagStatus( std::vector<bool *> flagsToCheck , bool flagSet, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode) {
+    uint16_t address = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    bool jointFlagStatus = true;
+    for (bool * flagReference : flagsToCheck){
+        bool flagStatus = *flagReference;
+        if (flagStatus == false){
+            jointFlagStatus = false;
+        }
+    }
+
+    if (jointFlagStatus == flagSet){    
+        cpu->PC = address;
+    }
+}
+
+COMMAND_IMPL(BCS){branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry)}, true, cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(BCC){branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry)}, false, cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(BMI){branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.negative)}, true, cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(BPL){branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.negative)}, false, cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(BVS){branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.overflow)}, true, cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(BVC){branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.overflow)}, false, cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(BEQ){branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry), &(cpu->flags.zero)}, true, cpu, dataBus, dataParams, addressingMode);}
+COMMAND_IMPL(BNE){branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry), &(cpu->flags.zero)}, false, cpu, dataBus, dataParams, addressingMode);}
+
+COMMAND_IMPL(JMP){
+    uint16_t address = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    cpu->PC = address - 3;
+}
+
+COMMAND_IMPL(NOOP){}
+COMMAND_IMPL(RTS){}
+COMMAND_IMPL(BRK){
+    std::cout << "A: $" << byte2hex(cpu->A) << ", ";
+    std::cout << "X: $" << byte2hex(cpu->X) << ", ";
+    std::cout << "Y: $" << byte2hex(cpu->Y) << std::endl;
+
+    std::cout << std::endl;
+    DisplayFlags(cpu->flags);
+    std::cout << std::endl;
+
+    logMem(dataBus);
 }
 
 uint8_t getFlagBit(bool bit){
     return bit ? 1 : 0;
+}
+
+void logMem(DataBus * dataBus){
+    for (uint16_t address : dataBus->addressesToExamine){
+        uint8_t value = dataBus->Read(address);
+        std::cout << "$" << byte2doublehex(address) << ": " << byte2hex(value) << std::endl;
+    }
 }
 
 void DisplayFlags (Flags flags){
