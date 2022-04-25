@@ -8,7 +8,6 @@ MULRESULT = $B002
 program:
         LDA #$00        ;Init MULRESULT to zero
         STA MULRESULT 
-
                         ; We know that A * B is simply A added together B times.
         LDY #B          ; Store number of times we have left to multiply
         DEY          
