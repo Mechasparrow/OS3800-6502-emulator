@@ -10,6 +10,15 @@ FIBCOUNT = $B001
 
     ORG $C000
 program:
-    LDA #$05
-    CMP #$05 ;Is 6 greater than 05?
+    LDY #$06
+    STY FIBCOUNT    
+    LDX #$04
+    STX $A0
+
+    LDY #$05
+    CPY FIBCOUNT ;Is 6 greater than 05?
+    BRK
+    CPY #$05
+    BRK
+    CPY $A0
     BRK

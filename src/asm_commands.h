@@ -79,6 +79,8 @@ COMMAND_IMPL(CLV);
 
 /* Compare instructions */
 COMMAND_IMPL(CMP);
+COMMAND_IMPL(CPX);
+COMMAND_IMPL(CPY);
 
 /* Jump instructions */
 COMMAND_IMPL(JMP);
@@ -138,6 +140,14 @@ const std::map<std::string, OpCodeInformation> OpCodeLookupTable = {
     {"C9", {&CMP, "CMP", AddressingMode::IMMEDIATE, 2, 2}},
     {"C5", {&CMP, "CMP", AddressingMode::ZERO_PAGE, 2, 3}},
     {"CD", {&CMP, "CMP", AddressingMode::ABSOLUTE, 3, 4}},
+
+    {"E0", {&CPX, "CPX", AddressingMode::IMMEDIATE, 2, 2}},
+    {"E4", {&CPX, "CPX", AddressingMode::ZERO_PAGE, 2, 3}},
+    {"EC", {&CPX, "CPX", AddressingMode::ABSOLUTE, 3, 4}},
+    
+    {"C0", {&CPY, "CPY", AddressingMode::IMMEDIATE, 2, 2}},
+    {"C4", {&CPY, "CPY", AddressingMode::ZERO_PAGE, 2, 3}},
+    {"CC", {&CPY, "CPY", AddressingMode::ABSOLUTE, 3, 4}},
 };
 
 //

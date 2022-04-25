@@ -30,8 +30,8 @@ The following 6502 data instructions will be implemented.
 
 # Conditional Instructions (used for comparing values in branching)
 - [X] CMP
-- [ ] CPX
-- [ ] CPY
+- [X] CPX
+- [X] CPY
 
 # Branching Instructions
 - [ ] BCC

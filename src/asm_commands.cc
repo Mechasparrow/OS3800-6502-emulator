@@ -53,15 +53,30 @@ void SaveToMemory(uint8_t * registerToTransfer, CPU6502 * cpu, DataBus * dataBus
     dataBus->Write(qualifiedAddress, databusWriteValue);
 }
 
-COMMAND_IMPL(CMP){
-    uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
-    uint8_t numberToCompare = dataBus->Read(absAddr);
+void CompareRegisterToMemory(uint8_t * registerToCompare, CPU6502 * cpu, DataBus * dataBus, uint16_t memAddress){
+    uint8_t numberToCompare = dataBus->Read(memAddress);
+    uint8_t registerOfInterest = *registerToCompare;
 
-    uint16_t tempDiff = (uint16_t)cpu->A - (uint16_t)numberToCompare;
+    uint16_t tempDiff = (uint16_t)registerOfInterest - (uint16_t)numberToCompare;
 
-    cpu->flags.carry = cpu->A >= numberToCompare;
+    cpu->flags.carry = registerOfInterest >= numberToCompare;
     cpu->flags.zero = checkZeroFlag(tempDiff);
     cpu->flags.negative = checkNegativeFlag(tempDiff);
+}
+
+COMMAND_IMPL(CMP){
+    uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    CompareRegisterToMemory(&(cpu->A), cpu, dataBus, absAddr);
+}
+
+COMMAND_IMPL(CPX){
+    uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    CompareRegisterToMemory(&(cpu->X), cpu, dataBus, absAddr);
+}
+
+COMMAND_IMPL(CPY){
+    uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    CompareRegisterToMemory(&(cpu->Y), cpu, dataBus, absAddr);
 }
 
 COMMAND_IMPL(ADC){
