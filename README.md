@@ -94,8 +94,8 @@ The following 6502 data instructions will be implemented.
 - [X] BPL ; Break positive
 - [x] BVC ; Break overflow clear
 - [x] BVS ; Break overflow set
-- [ ] BEQ ; Break equal
-- [ ] BNE ; Break not equal
+- [x] BEQ ; Break equal
+- [x] BNE ; Break not equal
 - [X] JMP
 
 # References
