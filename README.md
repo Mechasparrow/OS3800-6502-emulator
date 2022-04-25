@@ -99,7 +99,7 @@ The following 6502 data instructions will be implemented.
 - [X] JMP
 
 # References
-Op Code lookup and instruction reference
+Op Code lookup and instruction reference  
 https://www.masswerk.at/6502/6502_instruction_set.html
 
 CMake Docker container  
