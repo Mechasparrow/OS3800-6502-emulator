@@ -10,11 +10,12 @@ FIBCOUNT = $B001
 
     ORG $C000
 program:
-    LDA #$05
-    CMP #$06
+    LDX #$FF
+    BRK
+    INX
     BRK
     ;BEQ success
-    BNE success
+    BPL success
     RTS
 success LDA #$AA
     BRK 

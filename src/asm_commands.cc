@@ -34,7 +34,11 @@ uint16_t GrabRefinedAddress(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_
 void LoadIntoRegister(uint8_t * registerToPopulate, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
     uint16_t effectiveAddress = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
     std::cout << "effective address: " << byte2doublehex(effectiveAddress) << std::endl;
+
     *registerToPopulate = dataBus->Read(effectiveAddress);
+    
+    cpu->flags.negative = checkNegativeFlag((uint16_t)(*registerToPopulate));
+    cpu->flags.zero = checkZeroFlag((uint16_t)(*registerToPopulate));
 }
 
 void SaveToMemory(uint8_t * registerToTransfer, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
@@ -89,50 +93,64 @@ COMMAND_IMPL(SBC){
     cpu->A = tempSum & 0x00FF;
 }
 
+uint16_t incrementValueAndSetFlags(uint8_t startingValue, CPU6502 * cpu){
+    uint16_t updatedValue = (uint16_t)startingValue + 1;
+    cpu->flags.negative = checkNegativeFlag(updatedValue);
+    cpu->flags.zero = checkZeroFlag(updatedValue);
+
+    return updatedValue;
+}
+
+uint16_t decrementValueAndSetFlags(uint8_t startingValue, CPU6502 * cpu){
+    uint16_t updatedValue = (uint16_t)startingValue - 1;
+    cpu->flags.negative = checkNegativeFlag(updatedValue);
+    cpu->flags.zero = checkZeroFlag(updatedValue);
+
+    return updatedValue;
+}
+
 COMMAND_IMPL(INC){
     uint16_t qualifiedAddress = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
     uint8_t currentMemValue = dataBus->Read(qualifiedAddress);
-    dataBus->Write(qualifiedAddress, currentMemValue + 1);
+    
+    uint16_t incrementedMemValue = incrementValueAndSetFlags(currentMemValue, cpu);
+    dataBus->Write(qualifiedAddress, (uint8_t)incrementedMemValue);
+}
+
+COMMAND_IMPL(INX){
+    cpu->X = (uint8_t)(incrementValueAndSetFlags(cpu->X, cpu));
+}
+
+COMMAND_IMPL(INY){
+    cpu->Y = (uint8_t)(incrementValueAndSetFlags(cpu->Y, cpu));
 }
 
 COMMAND_IMPL(DEC){
     uint16_t qualifiedAddress = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
     uint8_t currentMemValue = dataBus->Read(qualifiedAddress);
-    dataBus->Write(qualifiedAddress, currentMemValue - 1);
-}
 
-COMMAND_IMPL(INX){
-    cpu->X = cpu->X + 1;
-}
-
-COMMAND_IMPL(INY){
-    cpu->Y = cpu->Y + 1;
+    uint16_t decrementedMemValue = incrementValueAndSetFlags(currentMemValue, cpu);
+    dataBus->Write(qualifiedAddress, (uint8_t)decrementedMemValue);
 }
 
 COMMAND_IMPL(DEX){
-    cpu->X = cpu->X - 1;
+    cpu->X = (uint8_t)(decrementValueAndSetFlags(cpu->X, cpu));
 }
 
 COMMAND_IMPL(DEY){
-    cpu->Y = cpu->Y - 1;
+    cpu->Y = (uint8_t)(decrementValueAndSetFlags(cpu->Y, cpu));
 }
 
-COMMAND_IMPL(TXA){
-    cpu->A = cpu->X;
+void transferBetweenRegisters(uint8_t * fromRegister, uint8_t * toRegister, CPU6502 * cpu){
+    cpu->flags.negative = checkNegativeFlag((uint16_t)(*fromRegister));
+    cpu->flags.zero = checkZeroFlag((uint16_t)(*fromRegister));
+    *fromRegister = *toRegister;
 }
 
-COMMAND_IMPL(TAX){
-    cpu->X = cpu->A;
-}
-
-COMMAND_IMPL(TYA){
-    cpu->A = cpu->Y;
-}
-
-COMMAND_IMPL(TAY){
-    cpu->Y = cpu->A;
-}
-
+COMMAND_IMPL(TXA){transferBetweenRegisters(&(cpu->X), &(cpu->A), cpu);}
+COMMAND_IMPL(TAX){transferBetweenRegisters(&(cpu->A), &(cpu->X), cpu);}
+COMMAND_IMPL(TYA){transferBetweenRegisters(&(cpu->Y), &(cpu->A), cpu);}
+COMMAND_IMPL(TAY){ transferBetweenRegisters(&(cpu->A), &(cpu->Y), cpu);}
 COMMAND_IMPL(CLV){cpu->flags.overflow = 0;}
 COMMAND_IMPL(SEC){cpu->flags.carry = 1;}
 COMMAND_IMPL(CLC){cpu->flags.carry = 0;}
