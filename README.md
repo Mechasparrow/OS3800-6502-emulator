@@ -29,9 +29,8 @@ cd test_assembly
 ```
 Or Docker
 ```
-docker run -it --rm -v `pwd`:/usr/src/emulatorlocal rikorose/gcc-cmake:gcc-11 /bin/bash -c "cp -R /usr/src/emulatorlocal /usr/src/emulator; rm -r /usr/src/emulator/build; cd /usr/src/emulator/; ./fib-docker.sh"
+docker run -it --rm -v `pwd`:/usr/src/emulatorlocal rikorose/gcc-cmake:gcc-11 /bin/bash -c "cp -R /usr/src/emulatorlocal /usr/src/emulator; [ -e usr/src/emulator/build ] && rm -r /usr/src/emulator/build; cd /usr/src/emulator/; ./fib-docker.sh"
 ```
-
 
 ^ The result of `$B002` will be `fib(6)`: `0x08`
 
@@ -43,7 +42,7 @@ cd test_assembly
 ```
 Or Docker
 ```
-docker run -it --rm -v `pwd`:/usr/src/emulatorlocal rikorose/gcc-cmake:gcc-11 /bin/bash -c "cp -R /usr/src/emulatorlocal /usr/src/emulator; rm -r /usr/src/emulator/build; cd /usr/src/emulator/; ./mul-docker.sh"
+docker run -it --rm -v `pwd`:/usr/src/emulatorlocal rikorose/gcc-cmake:gcc-11 /bin/bash -c "cp -R /usr/src/emulatorlocal /usr/src/emulator; [ -e usr/src/emulator/build ] && rm -r /usr/src/emulator/build; cd /usr/src/emulator/; ./mul-docker.sh"
 ```
 ^ The result of `$B002` will be `6 * 3` in hexadecimal: `0x12`
 
