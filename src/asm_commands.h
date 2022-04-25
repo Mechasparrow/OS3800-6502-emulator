@@ -17,7 +17,8 @@ enum AddressingMode {
     INDIRECT_X,
     INDIRECT_Y,
     IMPLIED,
-    INDIRECT
+    INDIRECT,
+    RELATIVE
 };
 
 typedef void (*OpCodeFunction)(CPU6502*, DataBus*, std::vector<uint8_t>, AddressingMode);
@@ -84,6 +85,10 @@ COMMAND_IMPL(CPY);
 
 /* Jump instructions */
 COMMAND_IMPL(JMP);
+COMMAND_IMPL(BCS);
+COMMAND_IMPL(BCC);
+COMMAND_IMPL(BMI);
+COMMAND_IMPL(BPL);
 
 /* Stack instructions */
 COMMAND_IMPL(RTS);
@@ -148,6 +153,11 @@ const std::map<std::string, OpCodeInformation> OpCodeLookupTable = {
     {"C0", {&CPY, "CPY", AddressingMode::IMMEDIATE, 2, 2}},
     {"C4", {&CPY, "CPY", AddressingMode::ZERO_PAGE, 2, 3}},
     {"CC", {&CPY, "CPY", AddressingMode::ABSOLUTE, 3, 4}},
+
+    {"90", {&BCC, "BCC", AddressingMode::RELATIVE, 2, 2}},
+    {"B0", {&BCS, "BCS", AddressingMode::RELATIVE, 2, 2}},
+    {"30", {&BMI, "BMI", AddressingMode::RELATIVE, 2, 2}},
+    {"10", {&BPL, "BPL", AddressingMode::RELATIVE, 2, 2}}
 };
 
 //

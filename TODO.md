@@ -34,14 +34,14 @@ The following 6502 data instructions will be implemented.
 - [X] CPY
 
 # Branching Instructions
-- [ ] BCC
-- [ ] BCS
-- [ ] BEQ
-- [ ] BMI
-- [ ] BNE
-- [ ] BPL
-- [ ] BVC
-- [ ] BVS
+- [X] BCC ; Carry clear
+- [X] BCS ; Carry set
+- [ ] BMI ; Break negative
+- [ ] BPL ; Break positive
+- [ ] BVC ; Break overflow clear
+- [ ] BVS ; Break overflow set
+- [ ] BEQ ; Break equal
+- [ ] BNE ; Break not equal
 - [X] JMP
 
 # Execution 

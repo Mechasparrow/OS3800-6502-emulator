@@ -35,7 +35,9 @@ uint16_t GrabRefinedAddress(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_
         return (uint16_t)(cpu->PC + 1);
     }else if (addressingMode == AddressingMode::ZERO_PAGE){
         return (uint16_t) dataParams.at(0);
-    }else {  
+    }else if (addressingMode == AddressingMode::RELATIVE){
+        return (uint16_t) ( (cpu->PC) + (int16_t)dataParams.at(0));
+    } else {  
         // Absolute addressing
         return (uint16_t)((dataParams.at(1) << 8) | (dataParams.at(0)));
     }
@@ -194,6 +196,31 @@ COMMAND_IMPL(BRK){
 
     logMem(dataBus);
 
+}
+
+void branchOnFlagStatus( bool * flagToCheck , bool flagSet, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode) {
+    uint16_t address = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    bool flagStatus = *flagToCheck;
+
+    if (flagStatus == flagSet){    
+        cpu->PC = address;
+    }
+}
+
+COMMAND_IMPL(BCS){
+    branchOnFlagStatus(&(cpu->flags.carry), true, cpu, dataBus, dataParams, addressingMode);
+}
+
+COMMAND_IMPL(BCC){
+    branchOnFlagStatus(&(cpu->flags.carry), false, cpu, dataBus, dataParams, addressingMode);
+}
+
+COMMAND_IMPL(BMI){
+    branchOnFlagStatus(&(cpu->flags.negative), true, cpu, dataBus, dataParams, addressingMode);
+}
+
+COMMAND_IMPL(BPL){
+    branchOnFlagStatus(&(cpu->flags.negative), false, cpu, dataBus, dataParams, addressingMode);
 }
 
 COMMAND_IMPL(JMP){
