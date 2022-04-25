@@ -16,34 +16,55 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-include_directories(${PROJECT_SOURCE_DIR}/hexlib)
+include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/src/hexlib)
 include_directories(${PROJECT_SOURCE_DIR})
 
 add_executable(
 	6502_cs3800_emulator
-	6502_main.cc
+	src/6502_main.cc
+)
+
+add_library(
+	input_validation
+	src/input_validation.cc
+)
+
+add_library(
+	6502_loader
+	src/program_loader/6502_loader.cc
 )
 
 add_library(
 	hex_lib
-	hexlib/hex_lib.cc
+	src/hexlib/hex_lib.cc
+)
+
+add_library(
+	asm_commands
+	src/asm_commands.cc
 )
 
 add_library(
 	6502_lib
-	6502_lib.cc
+	src/6502_lib.cc
 )
 
 include_directories(${PROJECT_SOURCE_DIR}/tests)
 
 add_executable(
 	cpu_core_tests
-	tests/cpu_core_test.cc
+	src/tests/cpu_core_test.cc
+)
+
+add_executable(
+	asm_commands_tests
+	src/tests/asm_commands_test.cc
 )
 
 add_executable(
 	hex_tests
-	tests/hex_tests.cc
+	src/tests/hex_tests.cc
 )
 
 target_link_libraries(
@@ -55,6 +76,31 @@ target_link_libraries(
 target_link_libraries(
 	hex_tests
 	hex_lib
+	gtest_main
+)
+
+target_link_libraries(
+	6502_loader
+	hex_lib
+)
+
+target_link_libraries(
+	asm_commands
+	6502_lib
+	hex_lib
+)
+
+target_link_libraries(
+	6502_cs3800_emulator
+	input_validation
+	asm_commands
+	6502_loader
+)
+
+target_link_libraries(
+	asm_commands_tests
+	asm_commands
+	6502_lib
 	gtest_main
 )
 
@@ -62,3 +108,4 @@ target_link_libraries(
 include(GoogleTest)
 gtest_discover_tests(cpu_core_tests)
 gtest_discover_tests(hex_tests)
+gtest_discover_tests(asm_commands_tests)
