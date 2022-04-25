@@ -88,7 +88,7 @@ void FetchExecuteLoop(CPU6502 * cpu, DataBus * databus, uint16_t stopAddress){
         std::vector<uint8_t> dataParameters = parseDataParameters(cpu, databus, opInformation);
         
         if (opInformation.mnemonicName != "NOP" && opInformation.mnemonicName != "RTS"){
-            LogCommand(opInformation);
+            //LogCommand(opInformation);
         }else if (opInformation.mnemonicName == "RTS"){
             break;
         }

@@ -33,8 +33,6 @@ uint16_t GrabRefinedAddress(CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_
 
 void LoadIntoRegister(uint8_t * registerToPopulate, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode){
     uint16_t effectiveAddress = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
-    std::cout << "effective address: " << byte2doublehex(effectiveAddress) << std::endl;
-
     *registerToPopulate = dataBus->Read(effectiveAddress);
     
     cpu->flags.negative = checkNegativeFlag((uint16_t)(*registerToPopulate));
