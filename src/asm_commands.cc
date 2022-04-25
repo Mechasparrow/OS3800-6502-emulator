@@ -209,7 +209,7 @@ uint8_t getFlagBit(bool bit){
 void logMem(DataBus * dataBus){
     for (uint16_t address : dataBus->addressesToExamine){
         uint8_t value = dataBus->Read(address);
-        std::cout << "$" << byte2doublehex(address) << ": " << byte2hex(value) << std::endl;
+        std::cout << "$" << byte2doublehex(address) << ": $" << byte2hex(value) << std::endl;
     }
 }
 
