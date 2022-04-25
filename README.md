@@ -1,6 +1,9 @@
 # OS3800-6502-emulator
 Turing Complete 6502 Emulator for the CS3800 class final project.
 
+# Why did I build this project?
+I have always been fascinated how first microcomputers were built with simple 8-bit processors like the MOS 6502 processor. I thought it would be a fun exercise to emulate a 6502 processor so that I could later emulate systems such as the NES, Apple I, and the Commodore 64
+
 # Computer requirements
 - 64-bit Linux system such as Ubuntu
 - GCC compiler
@@ -12,7 +15,33 @@ Turing Complete 6502 Emulator for the CS3800 class final project.
 2. Build emulator `cmake --build build`
 
 # Running the Project
+Please ensure that you have Built the project before running. Refer to the **Building the Project** instructions above.
 
+## Running the Fibonacci example program
+```bash
+cd test_assembly
+./assemble.sh fib/fib.asm
+../build/6502_cs3800_emulator fib/fib.s19 fib/addresses.addr
+```
+Or Docker
+```
+docker run -it --rm -v `pwd`:/usr/src/emulatorlocal rikorose/gcc-cmake:gcc-11 /bin/bash -c "cp -R /usr/src/emulatorlocal /usr/src/emulator; rm -r /usr/src/emulator/build; cd /usr/src/emulator/; ./fib-docker.sh"
+```
+
+
+^ The result of `$B002` will be `fib(6)`: `0x08`
+
+## Running the Multiply example program
+```bash
+cd test_assembly
+./assemble.sh mul/mul.asm
+../build/6502_cs3800_emulator mul/mul.s19 mul/addresses.addr
+```
+Or Docker
+```
+docker run -it --rm -v `pwd`:/usr/src/emulatorlocal rikorose/gcc-cmake:gcc-11 /bin/bash -c "cp -R /usr/src/emulatorlocal /usr/src/emulator; rm -r /usr/src/emulator/build; cd /usr/src/emulator/; ./mul-docker.sh"
+```
+^ The result of `$B002` will be `6 * 3` in hexadecimal: `0x12`
 
 # Running tests
 `cd build && ctest`

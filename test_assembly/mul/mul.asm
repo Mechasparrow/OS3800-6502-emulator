@@ -1,6 +1,6 @@
 ; A * B and writes to MULRESULT
 A = $06
-B = $02
+B = $03
 
 MULRESULT = $B002
 
