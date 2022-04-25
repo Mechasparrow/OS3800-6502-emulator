@@ -29,7 +29,7 @@ The following 6502 data instructions will be implemented.
 - [x] TYA
 
 # Conditional Instructions (used for comparing values in branching)
-- [ ] CMP
+- [X] CMP
 - [ ] CPX
 - [ ] CPY
 

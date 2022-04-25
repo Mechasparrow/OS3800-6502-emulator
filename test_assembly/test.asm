@@ -10,11 +10,6 @@ FIBCOUNT = $B001
 
     ORG $C000
 program:
-    LDA #$50
-    LDY #$9C
-    STY FIBCOUNT
-    
-    BRK
-    SEC
-    SBC FIBCOUNT
+    LDA #$05
+    CMP #$05 ;Is 6 greater than 05?
     BRK

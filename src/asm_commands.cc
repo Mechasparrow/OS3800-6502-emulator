@@ -53,6 +53,17 @@ void SaveToMemory(uint8_t * registerToTransfer, CPU6502 * cpu, DataBus * dataBus
     dataBus->Write(qualifiedAddress, databusWriteValue);
 }
 
+COMMAND_IMPL(CMP){
+    uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
+    uint8_t numberToCompare = dataBus->Read(absAddr);
+
+    uint16_t tempDiff = (uint16_t)cpu->A - (uint16_t)numberToCompare;
+
+    cpu->flags.carry = cpu->A >= numberToCompare;
+    cpu->flags.zero = checkZeroFlag(tempDiff);
+    cpu->flags.negative = checkNegativeFlag(tempDiff);
+}
+
 COMMAND_IMPL(ADC){
     uint16_t absAddr = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
     uint8_t numberToAdd = dataBus->Read(absAddr);
