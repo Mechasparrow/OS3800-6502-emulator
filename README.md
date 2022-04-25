@@ -9,13 +9,17 @@ I have always been fascinated how first microcomputers were built with simple 8-
 - GCC compiler
 - CMake installed with version 3.14 or higher
 
-
 # Building the Project
 1. Create build folder `cmake -S . -B build`
 2. Build emulator `cmake --build build`
 
 # Running the Project
 Please ensure that you have Built the project before running. Refer to the **Building the Project** instructions above.
+
+## Example command execution
+```bash
+./build/6502_cs3800_emulator path/to/program.s19 path/to/programaddresses.addr
+```
 
 ## Running the Fibonacci example program
 ```bash
@@ -94,5 +98,12 @@ The following 6502 data instructions will be implemented.
 - [ ] BNE ; Break not equal
 - [X] JMP
 
-# Execution 
-The program will take the file path to a ASM file (formatted for 6502) and execute its contents. The example execution will be to compute a Fibonacci number.
+# References
+Op Code lookup and instruction reference
+https://www.masswerk.at/6502/6502_instruction_set.html
+
+CMake Docker container  
+https://github.com/Rikorose/gcc-cmake
+
+VASM assembler  
+http://sun.hasenbraten.de/vasm/
