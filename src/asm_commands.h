@@ -89,6 +89,8 @@ COMMAND_IMPL(BCS);
 COMMAND_IMPL(BCC);
 COMMAND_IMPL(BMI);
 COMMAND_IMPL(BPL);
+COMMAND_IMPL(BVS);
+COMMAND_IMPL(BVC);
 
 /* Stack instructions */
 COMMAND_IMPL(RTS);
@@ -157,7 +159,9 @@ const std::map<std::string, OpCodeInformation> OpCodeLookupTable = {
     {"90", {&BCC, "BCC", AddressingMode::RELATIVE, 2, 2}},
     {"B0", {&BCS, "BCS", AddressingMode::RELATIVE, 2, 2}},
     {"30", {&BMI, "BMI", AddressingMode::RELATIVE, 2, 2}},
-    {"10", {&BPL, "BPL", AddressingMode::RELATIVE, 2, 2}}
+    {"10", {&BPL, "BPL", AddressingMode::RELATIVE, 2, 2}},
+    {"50", {&BVC, "BVC", AddressingMode::RELATIVE, 2, 2}},
+    {"70", {&BVS, "BVS", AddressingMode::RELATIVE, 2, 2}}
 };
 
 //

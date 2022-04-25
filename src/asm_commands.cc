@@ -223,6 +223,14 @@ COMMAND_IMPL(BPL){
     branchOnFlagStatus(&(cpu->flags.negative), false, cpu, dataBus, dataParams, addressingMode);
 }
 
+COMMAND_IMPL(BVS){
+    branchOnFlagStatus(&(cpu->flags.overflow), true, cpu, dataBus, dataParams, addressingMode);
+}
+
+COMMAND_IMPL(BVC){
+    branchOnFlagStatus(&(cpu->flags.overflow), false, cpu, dataBus, dataParams, addressingMode);
+}
+
 COMMAND_IMPL(JMP){
     uint16_t address = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
     cpu->PC = address - 3;

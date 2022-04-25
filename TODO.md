@@ -36,10 +36,10 @@ The following 6502 data instructions will be implemented.
 # Branching Instructions
 - [X] BCC ; Carry clear
 - [X] BCS ; Carry set
-- [ ] BMI ; Break negative
-- [ ] BPL ; Break positive
-- [ ] BVC ; Break overflow clear
-- [ ] BVS ; Break overflow set
+- [X] BMI ; Break negative
+- [X] BPL ; Break positive
+- [x] BVC ; Break overflow clear
+- [x] BVS ; Break overflow set
 - [ ] BEQ ; Break equal
 - [ ] BNE ; Break not equal
 - [X] JMP
