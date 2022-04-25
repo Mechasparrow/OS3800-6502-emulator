@@ -198,37 +198,51 @@ COMMAND_IMPL(BRK){
 
 }
 
-void branchOnFlagStatus( bool * flagToCheck , bool flagSet, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode) {
+void branchOnFlagStatus( std::vector<bool *> flagsToCheck , bool flagSet, CPU6502 * cpu, DataBus * dataBus, std::vector<uint8_t> dataParams, AddressingMode addressingMode) {
     uint16_t address = GrabRefinedAddress(cpu, dataBus, dataParams, addressingMode);
-    bool flagStatus = *flagToCheck;
+    bool jointFlagStatus = true;
+    for (bool * flagReference : flagsToCheck){
+        bool flagStatus = *flagReference;
+        if (flagStatus == false){
+            jointFlagStatus = false;
+        }
+    }
 
-    if (flagStatus == flagSet){    
+    if (jointFlagStatus == flagSet){    
         cpu->PC = address;
     }
 }
 
 COMMAND_IMPL(BCS){
-    branchOnFlagStatus(&(cpu->flags.carry), true, cpu, dataBus, dataParams, addressingMode);
+    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry)}, true, cpu, dataBus, dataParams, addressingMode);
 }
 
 COMMAND_IMPL(BCC){
-    branchOnFlagStatus(&(cpu->flags.carry), false, cpu, dataBus, dataParams, addressingMode);
+    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry)}, false, cpu, dataBus, dataParams, addressingMode);
 }
 
 COMMAND_IMPL(BMI){
-    branchOnFlagStatus(&(cpu->flags.negative), true, cpu, dataBus, dataParams, addressingMode);
+    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.negative)}, true, cpu, dataBus, dataParams, addressingMode);
 }
 
 COMMAND_IMPL(BPL){
-    branchOnFlagStatus(&(cpu->flags.negative), false, cpu, dataBus, dataParams, addressingMode);
+    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.negative)}, false, cpu, dataBus, dataParams, addressingMode);
 }
 
 COMMAND_IMPL(BVS){
-    branchOnFlagStatus(&(cpu->flags.overflow), true, cpu, dataBus, dataParams, addressingMode);
+    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.overflow)}, true, cpu, dataBus, dataParams, addressingMode);
 }
 
 COMMAND_IMPL(BVC){
-    branchOnFlagStatus(&(cpu->flags.overflow), false, cpu, dataBus, dataParams, addressingMode);
+    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.overflow)}, false, cpu, dataBus, dataParams, addressingMode);
+}
+
+COMMAND_IMPL(BEQ){
+    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry), &(cpu->flags.zero)}, true, cpu, dataBus, dataParams, addressingMode);
+}
+
+COMMAND_IMPL(BNE){
+    branchOnFlagStatus(std::vector<bool*> {&(cpu->flags.carry), &(cpu->flags.zero)}, false, cpu, dataBus, dataParams, addressingMode);
 }
 
 COMMAND_IMPL(JMP){
